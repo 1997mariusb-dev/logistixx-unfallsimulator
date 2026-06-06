@@ -1,0 +1,704 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>LOGISTIXX Unfallsimulator</title>
+    <style>
+        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #eceff1;
+            height: 100dvh;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
+        }
+
+        /* ─── HEADER ─────────────────────────────────────── */
+        #header {
+            background: #0d1b4b;
+            border-bottom: 4px solid #ff6d00;
+            padding: 10px 14px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-shrink: 0;
+            gap: 8px;
+        }
+        #header-left { display: flex; flex-direction: column; }
+        #company {
+            color: white;
+            font-size: 17px;
+            font-weight: 800;
+            letter-spacing: 1.5px;
+            line-height: 1.1;
+        }
+        #subtitle {
+            color: #8fa0cc;
+            font-size: 10px;
+            margin-top: 2px;
+            letter-spacing: 0.3px;
+        }
+        #header-right { display: flex; flex-direction: column; align-items: flex-end; gap: 6px; }
+        #badge {
+            background: #c62828;
+            color: white;
+            font-size: 10px;
+            font-weight: 800;
+            padding: 3px 9px;
+            border-radius: 4px;
+            letter-spacing: 0.8px;
+            white-space: nowrap;
+        }
+        #restart-btn {
+            background: transparent;
+            color: #8fa0cc;
+            border: 1px solid #8fa0cc;
+            border-radius: 5px;
+            padding: 4px 10px;
+            font-size: 11px;
+            cursor: pointer;
+            font-family: inherit;
+            white-space: nowrap;
+        }
+        #restart-btn:active { background: rgba(255,255,255,0.08); }
+
+        /* ─── NOTRUF-BANNER ───────────────────────────────── */
+        #notruf-banner {
+            display: none;
+            background: #1b5e20;
+            color: #fff;
+            text-align: center;
+            padding: 9px 14px;
+            font-weight: 800;
+            font-size: 15px;
+            letter-spacing: 0.5px;
+            flex-shrink: 0;
+            animation: blink 1.6s ease-in-out infinite;
+        }
+        @keyframes blink {
+            0%,100% { background: #1b5e20; }
+            50%      { background: #2e7d32; }
+        }
+
+        /* ─── CHAT ────────────────────────────────────────── */
+        #chat-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 14px 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            -webkit-overflow-scrolling: touch;
+            scroll-behavior: smooth;
+        }
+
+        .bubble {
+            max-width: 88%;
+            padding: 10px 13px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.55;
+            word-wrap: break-word;
+        }
+        .bubble-bot {
+            background: #fff;
+            color: #1a1a2e;
+            align-self: flex-start;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.12);
+        }
+        .bubble-user {
+            background: #0d1b4b;
+            color: #fff;
+            align-self: flex-end;
+            border-bottom-right-radius: 4px;
+        }
+        .bubble-warning {
+            background: #fff8e1;
+            color: #6d4c00;
+            border-left: 4px solid #ffa000;
+            align-self: flex-start;
+            border-radius: 10px;
+            border-top-left-radius: 10px;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .bubble-success {
+            background: #e8f5e9;
+            color: #1b5e20;
+            border-left: 4px solid #43a047;
+            align-self: flex-start;
+            border-radius: 10px;
+            border-bottom-left-radius: 4px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+        }
+        .step-label {
+            display: block;
+            font-size: 10px;
+            font-weight: 800;
+            text-transform: uppercase;
+            letter-spacing: 0.6px;
+            margin-bottom: 5px;
+            color: #2e7d32;
+            opacity: 0.85;
+        }
+
+        /* ─── NOTRUF-PANEL ────────────────────────────────── */
+        #notruf-panel {
+            display: none;
+            background: #e8f5e9;
+            border-top: 2px solid #81c784;
+            padding: 12px 14px;
+            flex-shrink: 0;
+        }
+        #notruf-q {
+            font-size: 14px;
+            color: #1b5e20;
+            font-weight: 700;
+            margin-bottom: 10px;
+            line-height: 1.4;
+        }
+        #notruf-answer-btn {
+            display: block;
+            width: 100%;
+            background: #2e7d32;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 14px 16px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            text-align: left;
+            line-height: 1.45;
+            font-family: inherit;
+            letter-spacing: 0.2px;
+        }
+        #notruf-answer-btn:active { background: #1b5e20; transform: scale(0.99); }
+
+        /* ─── INPUT ───────────────────────────────────────── */
+        #input-area {
+            background: #fff;
+            border-top: 1px solid #cfd8dc;
+            padding: 10px 12px;
+            display: flex;
+            gap: 8px;
+            align-items: flex-end;
+            flex-shrink: 0;
+        }
+        #user-input {
+            flex: 1;
+            border: 2px solid #cfd8dc;
+            border-radius: 10px;
+            padding: 10px 13px;
+            font-size: 16px;   /* ≥16px verhindert iOS-Zoom */
+            line-height: 1.4;
+            resize: none;
+            outline: none;
+            font-family: inherit;
+            max-height: 110px;
+            min-height: 44px;
+            -webkit-appearance: none;
+            transition: border-color 0.15s;
+            background: #fafafa;
+        }
+        #user-input:focus { border-color: #0d1b4b; background: #fff; }
+        #user-input:disabled { background: #f5f5f5; color: #9e9e9e; }
+
+        #send-btn {
+            background: #0d1b4b;
+            color: #fff;
+            border: none;
+            border-radius: 10px;
+            padding: 0 20px;
+            font-size: 15px;
+            font-weight: 700;
+            cursor: pointer;
+            align-self: flex-end;
+            height: 44px;
+            min-width: 76px;
+            font-family: inherit;
+            -webkit-appearance: none;
+            flex-shrink: 0;
+            transition: background 0.15s;
+        }
+        #send-btn:active  { background: #1a2e72; }
+        #send-btn:disabled { background: #b0bec5; cursor: default; }
+    </style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div id="header">
+    <div id="header-left">
+        <div id="company">LOGISTIXX GmbH</div>
+        <div id="subtitle">Unfallsimulator – Lagerhalle Bingen a.&thinsp;Rh.</div>
+    </div>
+    <div id="header-right">
+        <div id="badge">UNFALL AKTIV</div>
+        <button id="restart-btn" onclick="restart()">↺ Neu starten</button>
+    </div>
+</div>
+
+<!-- NOTRUF-BANNER -->
+<div id="notruf-banner">📞 NOTRUF 112 – GESPRÄCH AKTIV</div>
+
+<!-- CHAT -->
+<div id="chat-area"></div>
+
+<!-- NOTRUF-PANEL -->
+<div id="notruf-panel">
+    <div id="notruf-q"></div>
+    <button id="notruf-answer-btn" onclick="answerNotruf()"></button>
+</div>
+
+<!-- INPUT -->
+<div id="input-area">
+    <textarea
+        id="user-input"
+        placeholder="Was tun Sie? Hier schreiben…"
+        rows="1"
+        oninput="autoResize(this)"
+        onkeydown="handleKey(event)"
+    ></textarea>
+    <button id="send-btn" onclick="handleInput()">Senden</button>
+</div>
+
+<script>
+'use strict';
+
+// ── STATE ────────────────────────────────────────────────────────────────────
+const state = {
+    s1: false, s2: false, s3: false, s4: false,
+    s5: false, s5w: false, s6: false, s7: false,
+    s8: false, s9: false,
+    notrufMode: false,
+    notrufStep: 0,
+    done: false
+};
+
+// ── NOTRUF-DATEN ─────────────────────────────────────────────────────────────
+const NOTRUF = [
+    {
+        q:  'Leitstelle: „Feuerwehr und Rettungsdienst – was ist passiert?"',
+        btn:'LOGISTIXX GmbH Bingen am Rhein – Lagerhalle, Gang 7'
+    },
+    {
+        q:  'Leitstelle: „Was ist genau passiert?"',
+        btn:'Arbeitsunfall – Mitarbeiter von Gabelstapler erfasst, bewusstlos'
+    },
+    {
+        q:  'Leitstelle: „Wie viele Personen sind verletzt?"',
+        btn:'Eine Person verletzt'
+    },
+    {
+        q:  'Leitstelle: „Welche Verletzungen liegen vor?"',
+        btn:'Bewusstlos, Atmung vorhanden, Beinverletzung sichtbar'
+    },
+    {
+        q:  'Leitstelle: „Bleiben Sie bitte in der Leitung. Gibt es Rückfragen?"',
+        btn:'Verstanden – ich warte'
+    }
+];
+
+// ── HELPER ───────────────────────────────────────────────────────────────────
+function has(text, kws) {
+    const t = text.toLowerCase().normalize('NFC');
+    return kws.some(k => t.includes(k.toLowerCase()));
+}
+
+function addMsg(html, type = 'bot') {
+    const el = document.createElement('div');
+    el.className = 'bubble bubble-' + type;
+    el.innerHTML = html;
+    document.getElementById('chat-area').appendChild(el);
+    scrollDown();
+}
+
+function addUser(text) {
+    addMsg(escHtml(text), 'user');
+}
+
+function escHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+function scrollDown() {
+    const c = document.getElementById('chat-area');
+    requestAnimationFrame(() => { c.scrollTop = c.scrollHeight; });
+}
+
+function delay(fn, ms) { setTimeout(fn, ms); }
+
+function setInputLock(locked) {
+    document.getElementById('user-input').disabled = locked;
+    document.getElementById('send-btn').disabled  = locked;
+}
+
+// ── INITIALIZER ──────────────────────────────────────────────────────────────
+function init() {
+    document.getElementById('chat-area').innerHTML = '';
+    delay(() => addMsg(
+        '<strong>Szenario – 14:30 Uhr, Lagerhalle LOGISTIXX GmbH Bingen am Rhein</strong><br><br>' +
+        'Es ist 14:30 Uhr. Plötzlich hören Sie ein dumpfes Geräusch. Sie drehen sich um: Ihr Kollege <strong>Stefan K. (34)</strong> liegt auf dem Boden. ' +
+        'Ein Gabelstapler ist rückwärts in ihn gefahren. Der Staplerfahrer hat das Fahrzeug gestoppt und steht schockiert daneben. ' +
+        'Stefan atmet – reagiert aber nicht auf Ansprache.<br><br>' +
+        '<strong>Was tun Sie als Erstes?</strong>'
+    ), 200);
+}
+
+// ── HAUPT-LOGIK ──────────────────────────────────────────────────────────────
+function handleInput() {
+    const el  = document.getElementById('user-input');
+    const raw = el.value.trim();
+    if (!raw || state.done || state.notrufMode) return;
+    el.value = '';
+    el.style.height = 'auto';
+    addUser(raw);
+    delay(() => process(raw), 250);
+}
+
+function process(raw) {
+    const t = raw.toLowerCase().normalize('NFC');
+    let hit = false;
+
+    // ── S1: Eigenschutz/Überblick ──────────────────────────────────────────
+    if (!state.s1 && has(t, [
+        'eigenschutz','überblick','umschauen','orientieren','umgebung','gefahr',
+        'sicher','absichern','schauen','umguck'
+    ])) {
+        state.s1 = true; hit = true;
+        addMsg(
+            '<span class="step-label">✔ Schritt 1 – Eigenschutz &amp; Überblick</span>' +
+            'Sie verschaffen sich einen Überblick: Der Gabelstapler steht still, der Fahrer hat das Fahrzeug gesichert. ' +
+            'Die Umgebung ist ruhig – Sie sind in Sicherheit.',
+            'success'
+        );
+    }
+
+    // ── Fehlende S1-Vorraussetzung bei S2/S3-Versuch ──────────────────────
+    if (!hit && !state.s1 && has(t, [
+        'absperren','sperren','gang','bereich','kollegen','schild','blockieren',
+        'ansprechen','bewusstsein','atmung','zustand','puls','reaktion',
+        'prüfen','überprüfen','reagiert','atmet','lebt'
+    ])) {
+        hit = true;
+        addMsg(
+            '⚠️ <strong>Vorsicht!</strong> Ein weiterer Gabelstapler fährt um das Regal – er bremst knapp ab. ' +
+            'Sorgen Sie zunächst für Ihren <strong>Eigenschutz</strong> und verschaffen Sie sich einen Überblick!',
+            'warning'
+        );
+    }
+
+    // ── S2: Bereich absichern ──────────────────────────────────────────────
+    if (!hit && state.s1 && !state.s2 && has(t, [
+        'absperren','sperren','absichern','gang sperren','bereich sperren',
+        'kollegen warnen','schild','blockieren','warnen','bereich'
+    ])) {
+        state.s2 = true; hit = true;
+        addMsg(
+            '<span class="step-label">✔ Schritt 2 – Bereich absichern</span>' +
+            'Sie sperren den Gang ab und warnen die Kollegen. Niemand darf mehr in den Bereich einfahren oder eintreten.',
+            'success'
+        );
+    }
+
+    // ── S3: Zustand prüfen ─────────────────────────────────────────────────
+    if (!hit && !state.s3 && has(t, [
+        'ansprechen','bewusstsein','atmung','zustand','puls','reaktion',
+        'prüfen','überprüfen','reagiert','atmet','lebt','lebenzeichen',
+        'lebenszeichen','bewusst','ansprechbar'
+    ])) {
+        state.s3 = true; hit = true;
+        addMsg(
+            '<span class="step-label">✔ Schritt 3 – Zustand prüfen</span>' +
+            'Sie sprechen Stefan laut an – keine Reaktion. Atmung ist hörbar und regelmäßig. ' +
+            'Schwellung am linken Bein sichtbar.',
+            'success'
+        );
+    }
+
+    // ── S4: Notruf ────────────────────────────────────────────────────────
+    if (!hit && !state.s4 && has(t, [
+        '112','notruf','rettung rufen','rettungsdienst','notarzt',
+        'ambulanz','ruf','hilfe rufen','feuerwehr'
+    ])) {
+        hit = true;
+        startNotruf();
+    }
+
+    // ── S5: Stabile Seitenlage ────────────────────────────────────────────
+    if (!hit && has(t, [
+        'seitenlage','stabile lage','stabile seitenlage','drehen',
+        'auf die seite','auf seite','stabile'
+    ])) {
+        hit = true;
+        if (!state.s3) {
+            addMsg(
+                '⚠️ Prüfen Sie zuerst Stefans Zustand, bevor Sie ihn bewegen!',
+                'warning'
+            );
+        } else if (!state.s5) {
+            state.s5 = true;
+            addMsg(
+                '<span class="step-label">✔ Schritt 5 – Stabile Seitenlage</span>' +
+                'Stefan liegt in der stabilen Seitenlage. Die Atemwege sind frei – er atmet weiterhin regelmäßig.',
+                'success'
+            );
+            delay(checkFischerHint, 400);
+        }
+    }
+
+    // ── S5W: Wundversorgung ───────────────────────────────────────────────
+    if (!hit && has(t, [
+        'druckverband','blut stillen','wunde verbinden','verband','verbinden',
+        'blutung','komprimieren','compress','druck','wunde'
+    ])) {
+        hit = true;
+        if (!state.s5w) {
+            state.s5w = true;
+            addMsg(
+                '<span class="step-label">✔ Schritt 5W – Wundversorgung</span>' +
+                'Druckverband angelegt. Die Blutung lässt deutlich nach.',
+                'success'
+            );
+            delay(checkFischerHint, 400);
+        }
+    }
+
+    // ── S6: Betreuen ──────────────────────────────────────────────────────
+    if (!hit && has(t, [
+        'betreuen','bleiben','beruhigen','decke','wärme','bei ihm','bei stefan',
+        'kümmern','begleiten','nicht allein','allein lassen'
+    ])) {
+        hit = true;
+        if (!state.s5 && !state.s5w) {
+            addMsg(
+                '⚠️ Leisten Sie zuerst Erste Hilfe – bringen Sie Stefan in die stabile Seitenlage oder versorgen Sie die Wunde.',
+                'warning'
+            );
+        } else if (!state.s6) {
+            state.s6 = true;
+            addMsg(
+                '<span class="step-label">✔ Schritt 6 – Betreuen &amp; Beobachten</span>' +
+                'Sie bleiben bei Stefan, sprechen beruhigend auf ihn ein und beobachten seine Atmung. ' +
+                'Nach ca. 8 Minuten ist eine Sirene zu hören.',
+                'success'
+            );
+            delay(checkFischerHint, 400);
+        }
+    }
+
+    // ── S7: Rettungsdienst einweisen ──────────────────────────────────────
+    if (!hit && has(t, [
+        'einweisen','eingang','zum eingang','sanitäter','rettung empfangen',
+        'abholen','jemand schicken','jemand zum','einweisen','empfangen'
+    ])) {
+        hit = true;
+        if (!state.s7) {
+            state.s7 = true;
+            addMsg(
+                '<span class="step-label">✔ Schritt 7 – Rettungsdienst einweisen</span>' +
+                'Ein Kollege eilt zum Haupteingang. Die Sanitäter treffen mit Trage und Ausrüstung ein.',
+                'success'
+            );
+            delay(checkFischerHint, 400);
+        }
+    }
+
+    // ── S8: Vorgesetzten informieren ──────────────────────────────────────
+    if (!hit && has(t, [
+        'vorgesetzter','schichtleiter','fischer','informieren','benachrichtigen',
+        'melden','bescheid','leiter','chef','aufseher'
+    ])) {
+        hit = true;
+        if (!state.s8) {
+            state.s8 = true;
+            addMsg(
+                '<span class="step-label">✔ Schritt 8 – Vorgesetzten informieren</span>' +
+                'Schichtleiter Fischer wurde informiert. Er sichert den Bereich und koordiniert die weiteren Maßnahmen.',
+                'success'
+            );
+            delay(checkFischerHint, 400);
+        }
+    }
+
+    // ── S9: Dokumentation ────────────────────────────────────────────────
+    if (!hit && has(t, [
+        'unfallanzeige','verbandbuch','dokumentieren','unfall melden',
+        'unfall dokumentieren','formular','protokoll','aufschreiben',
+        'eintragen','notieren','bericht'
+    ])) {
+        hit = true;
+        if (!state.s9) {
+            state.s9 = true;
+            addMsg(
+                '<span class="step-label">✔ Schritt 9 – Dokumentation</span>' +
+                'Die Unfallanzeige wurde ausgefüllt und an Schichtleiter Fischer weitergegeben. ' +
+                'Der Vorfall ist ordnungsgemäß im Verbandbuch dokumentiert.',
+                'success'
+            );
+            delay(checkCompletion, 400);
+        }
+    }
+
+    // ── Fallback ──────────────────────────────────────────────────────────
+    if (!hit) {
+        giveHint();
+    }
+}
+
+// ── HINWEIS ───────────────────────────────────────────────────────────────────
+function giveHint() {
+    let tip = '';
+    if (!state.s1)              tip = 'einen <strong>Überblick</strong> verschaffen und Ihren Eigenschutz sicherstellen';
+    else if (!state.s3)         tip = 'Stefans <strong>Zustand prüfen</strong> (ansprechen, Atmung)';
+    else if (!state.s4)         tip = 'den <strong>Notruf 112</strong> absetzen';
+    else if (!state.s5 && !state.s5w) tip = '<strong>Erste Hilfe</strong> leisten (Seitenlage oder Wundversorgung)';
+    else if (!state.s6)         tip = 'bei Stefan <strong>bleiben und ihn betreuen</strong>';
+    else if (!state.s7)         tip = 'jemanden zum <strong>Eingang schicken</strong>, um den Rettungsdienst einzuweisen';
+    else if (!state.s8)         tip = 'den <strong>Vorgesetzten Fischer</strong> informieren';
+    else if (!state.s9)         tip = 'den Unfall <strong>dokumentieren</strong> (Unfallanzeige, Verbandbuch)';
+
+    if (tip) {
+        addMsg('Das habe ich nicht ganz verstanden. Denken Sie daran: Sie sollten noch ' + tip + '.', 'bot');
+    }
+}
+
+// ── NOTRUF ────────────────────────────────────────────────────────────────────
+function startNotruf() {
+    state.notrufMode = true;
+    state.notrufStep = 0;
+    document.getElementById('notruf-banner').style.display = 'block';
+    document.getElementById('notruf-panel').style.display  = 'block';
+    setInputLock(true);
+    addMsg('📞 Sie wählen die <strong>112</strong>. Die Leitstelle nimmt ab…', 'bot');
+    delay(showNotrufQ, 600);
+}
+
+function showNotrufQ() {
+    const d = NOTRUF[state.notrufStep];
+    document.getElementById('notruf-q').innerHTML = d.q;
+    document.getElementById('notruf-answer-btn').textContent = d.btn;
+}
+
+function answerNotruf() {
+    const d = NOTRUF[state.notrufStep];
+    addMsg('📞 ' + escHtml(d.btn), 'user');
+    state.notrufStep++;
+
+    if (state.notrufStep < NOTRUF.length) {
+        delay(showNotrufQ, 500);
+    } else {
+        delay(() => {
+            addMsg(
+                'Leitstelle: <em>„Rettungswagen ist alarmiert. Fahrzeit ca. 9 Minuten. ' +
+                'Bleiben Sie bitte in der Leitung, falls möglich."</em><br>' +
+                '— <em>Verbindung getrennt.</em>',
+                'bot'
+            );
+            state.s4 = true;
+            state.notrufMode = false;
+            document.getElementById('notruf-banner').style.display = 'none';
+            document.getElementById('notruf-panel').style.display  = 'none';
+            setInputLock(false);
+            delay(() => addMsg(
+                '<span class="step-label">✔ Schritt 4 – Notruf 112</span>' +
+                'Notruf erfolgreich abgesetzt. Was tun Sie als Nächstes?',
+                'success'
+            ), 500);
+        }, 500);
+    }
+}
+
+// ── FISCHER-HINWEIS ───────────────────────────────────────────────────────────
+function checkFischerHint() {
+    const mainDone = state.s1 && state.s2 && state.s3 && state.s4 &&
+                     (state.s5 || state.s5w) && state.s6 && state.s7 && state.s8;
+    if (mainDone && !state.s9 && !state.done) {
+        delay(() => addMsg(
+            'Fischer schaut Sie an: <em>„Haben Sie alles ordnungsgemäß dokumentiert? ' +
+            'Die Unfallanzeige und das Verbandbuch müssen noch ausgefüllt werden."</em>',
+            'bot'
+        ), 600);
+    }
+    checkCompletion();
+}
+
+// ── ABSCHLUSS ─────────────────────────────────────────────────────────────────
+function checkCompletion() {
+    const allDone = state.s1 && state.s2 && state.s3 && state.s4 &&
+                    (state.s5 || state.s5w) && state.s6 && state.s7 && state.s8 && state.s9;
+    if (!allDone || state.done) return;
+    state.done = true;
+
+    delay(() => {
+        const badge = document.getElementById('badge');
+        badge.textContent = 'ABGESCHLOSSEN';
+        badge.style.background = '#2e7d32';
+
+        addMsg(
+            '<strong>Simulation erfolgreich abgeschlossen!</strong><br><br>' +
+            'Sie haben alle Handlungsschritte korrekt durchgeführt:<br><br>' +
+            '&nbsp;✔ Schritt 1 – Eigenschutz &amp; Überblick<br>' +
+            '&nbsp;✔ Schritt 2 – Bereich absichern<br>' +
+            '&nbsp;✔ Schritt 3 – Zustand prüfen<br>' +
+            '&nbsp;✔ Schritt 4 – Notruf 112<br>' +
+            '&nbsp;✔ Schritt 5 – Erste Hilfe (Seitenlage / Wundversorgung)<br>' +
+            '&nbsp;✔ Schritt 6 – Betreuen &amp; Beobachten<br>' +
+            '&nbsp;✔ Schritt 7 – Rettungsdienst einweisen<br>' +
+            '&nbsp;✔ Schritt 8 – Vorgesetzten informieren<br>' +
+            '&nbsp;✔ Schritt 9 – Dokumentation<br><br>' +
+            'Stefan K. wurde vom Rettungsdienst versorgt und ins Krankenhaus transportiert. ' +
+            'Ihre schnelle und richtige Reaktion hat möglicherweise Schlimmeres verhindert. ' +
+            '<strong>Sehr gut gemacht!</strong><br><br>' +
+            '<em>Klicken Sie auf „↺ Neu starten", um die Simulation zu wiederholen.</em>',
+            'success'
+        );
+
+        setInputLock(true);
+        document.getElementById('user-input').placeholder =
+            'Simulation beendet – ↺ Neu starten zum Wiederholen';
+    }, 600);
+}
+
+// ── RESET ─────────────────────────────────────────────────────────────────────
+function restart() {
+    Object.assign(state, {
+        s1:false, s2:false, s3:false, s4:false,
+        s5:false, s5w:false, s6:false, s7:false,
+        s8:false, s9:false,
+        notrufMode:false, notrufStep:0, done:false
+    });
+    document.getElementById('notruf-banner').style.display = 'none';
+    document.getElementById('notruf-panel').style.display  = 'none';
+    setInputLock(false);
+    document.getElementById('user-input').placeholder = 'Was tun Sie? Hier schreiben…';
+    document.getElementById('user-input').value = '';
+    const badge = document.getElementById('badge');
+    badge.textContent  = 'UNFALL AKTIV';
+    badge.style.background = '#c62828';
+    init();
+}
+
+// ── TEXTAREA AUTO-RESIZE ──────────────────────────────────────────────────────
+function autoResize(el) {
+    el.style.height = 'auto';
+    el.style.height = Math.min(el.scrollHeight, 110) + 'px';
+}
+
+function handleKey(e) {
+    if (e.key === 'Enter' && !e.shiftKey && !e.ctrlKey) {
+        e.preventDefault();
+        handleInput();
+    }
+}
+
+// ── START ─────────────────────────────────────────────────────────────────────
+init();
+</script>
+</body>
+</html>
