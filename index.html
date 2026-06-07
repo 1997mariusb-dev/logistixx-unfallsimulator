@@ -78,7 +78,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 /* ═══════════════════════════════════════════════════════════════
    STATE
 ═══════════════════════════════════════════════════════════════ */
-const S = {s1:0,s2:0,s3:0,s4:0,s5:0,s5w:0,s6:0,s7:0,s8:0,s9:0,
+const S = {s1:0,s2:0,s3:0,s4:0,s5:0,s6:0,s7:0,s8:0,s9:0,
            notruf:false,nStep:0,done:false,fallback:0};
 
 /* ═══════════════════════════════════════════════════════════════
@@ -126,10 +126,24 @@ const KW = {
       'checke','sehe nach','schaue nach','gucke nach'],
 
   // S4 – Notruf
-  s4:['112','notruf','rettung ruf','rettungsdienst ruf','rettungsdienst alarm',
+  s4:['112','notruf',
+      // alle Konjugationsformen von "rufen" + Objekt
+      'rufe den rettungsdienst','ruf den rettungsdienst',
+      'rufe rettungsdienst','ruf rettungsdienst',
+      'rufe die sanitäter','ruf die sanitäter',
+      'rufe sanitäter','ruf sanitäter',
+      'rufe den notarzt','ruf den notarzt','rufe notarzt',
+      'rufe die feuerwehr','ruf die feuerwehr',
+      'rufe hilfe','ruf hilfe','rufe um hilfe','ruf um hilfe',
+      'rufe einen krankenwagen','ruf einen krankenwagen','krankenwagen',
+      'rufe einen rettungswagen','ruf einen rettungswagen','rettungswagen rufen',
+      'rettungsdienst alarmier','rettungsdienst ruf','rettungsdienst alarm',
+      // wählen / absetzen
+      'wähle die 112','wähle 112','notruf wählen','notruf rufen',
+      'ruf die 112','ruf an die 112','notruf absetzen','alarm schlagen',
+      // andere Formulierungen
       'notarzt','ambulanz','feuerwehr','hilfe hol','hilfe ruf',
-      'sanitäter ruf','ruf die 112','wähle die 112','wähle 112',
-      'ruf an die 112','notruf wählen','notruf rufen'],
+      'sanitäter ruf','alarmier','verständig'],
 
   // S5 – Stabile Seitenlage
   s5:['seitenlage','stabile lage','auf die seite','auf seite',
@@ -138,11 +152,6 @@ const KW = {
       'stabile position','leg ihn auf','lager ihn',
       'lege ihn auf die seite','lege ihn','lagerung',
       'auf die seite legen','auf die seite drehen'],
-
-  // S5W – Wundversorgung
-  s5w:['druckverband','blut still','verband anlegen','verbinde','blutung',
-       'kompress','wunde','druck auf','drücke auf','blut stopp',
-       'verband','verbände','wunde versorgen','wunde behandeln'],
 
   // S6 – Betreuen / Beobachten
   s6:['betreu','bleibe bei','bleib bei','bei ihm','bei stefan','beruhig',
@@ -175,7 +184,7 @@ const KW = {
 };
 
 // Alle Nicht-S1-Keywords für S1-Sperre
-const OTHER_KW = [...KW.s2,...KW.s3,...KW.s4,...KW.s5,...KW.s5w,
+const OTHER_KW = [...KW.s2,...KW.s3,...KW.s4,...KW.s5,
                   ...KW.s6,...KW.s7,...KW.s8,...KW.s9];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -219,7 +228,6 @@ const TIPP = {
   s3:'Prüfen Sie Stefans Zustand. Beispiel: „Ich spreche Stefan an" oder „Ich prüfe seine Atmung".',
   s4:'Alarmieren Sie den Rettungsdienst. Beispiel: „Ich rufe den Notruf" oder „Ich wähle die 112".',
   s5:'Bringen Sie Stefan in eine sichere Position. Beispiel: „Ich lege Stefan in die stabile Seitenlage" oder „Ich drehe ihn auf die Seite".',
-  s5w:'Versorgen Sie die Wunde. Beispiel: „Ich lege einen Druckverband an" oder „Ich versuche die Blutung zu stoppen".',
   s6:'Bleiben Sie bei Stefan und beobachten Sie seinen Zustand. Beispiel: „Ich bleibe bei Stefan" oder „Ich betreue ihn".',
   s7:'Sorgen Sie dafür, dass der Rettungsdienst den Weg findet. Beispiel: „Ich schicke jemanden nach draußen zum Eingang" oder „Ich weise den Rettungsdienst ein".',
   s8:'Informieren Sie den Vorgesetzten. Herr Fischer ist der Schichtleiter. Beispiel: „Ich informiere Fischer" oder „Ich sage dem Schichtleiter Bescheid".',
@@ -235,7 +243,6 @@ const FOLLOWUP = {
   s3:'Stefan reagiert nicht, atmet aber. Was unternehmen Sie als Nächstes?',
   // s4 hat eigenen Follow-up am Ende des Notruf-Modus
   s5:'Was tun Sie jetzt noch für Stefan?',
-  s5w:'Was unternehmen Sie als Nächstes?',
   s6:'Sie halten Wache neben Stefan. Was müssen Sie noch tun?',
   s7:'Was haben Sie sonst noch zu erledigen?',
   s8:'Haben Sie alles erledigt, was in dieser Situation nötig ist?'
@@ -304,7 +311,7 @@ function lock(on){['user-input','send-btn','tipp-btn'].forEach(id=>
 ═══════════════════════════════════════════════════════════════ */
 function expected(){
   if(!S.s1)return 's1'; if(!S.s2)return 's2'; if(!S.s3)return 's3';
-  if(!S.s4)return 's4'; if(!S.s5&&!S.s5w)return 's5';
+  if(!S.s4)return 's4'; if(!S.s5)return 's5';
   if(!S.s6)return 's6'; if(!S.s7)return 's7';
   if(!S.s8)return 's8'; if(!S.s9)return 's9';
   return null;
@@ -323,9 +330,10 @@ function init(){
   later(()=>msg(
     '<strong>Szenario – 14:30 Uhr, Lagerhalle LOGISTIXX GmbH</strong><br><br>'+
     'Es ist 14:30 Uhr. Plötzlich hören Sie ein dumpfes Geräusch. Sie drehen sich um: '+
-    'Ihr Kollege <strong>Stefan K. (34)</strong> liegt auf dem Boden. Ein Gabelstapler ist '+
+    'Ihr Kollege <strong>Stefan K. (34)</strong> liegt reglos auf dem Boden. Ein Gabelstapler ist '+
     'rückwärts in ihn gefahren. Der Staplerfahrer hat das Fahrzeug gestoppt und steht schockiert '+
-    'daneben. Stefan atmet – reagiert aber nicht auf Ansprache.<br><br>'+
+    'daneben. Stefans linkes Bein liegt in einer unnatürlichen Position, '+
+    'am Hosenbein ist Blut zu sehen.<br><br>'+
     'Ihr <strong>Schichtleiter Herr Fischer</strong> ist zur Zeit in der Nachbarhalle.<br><br>'+
     '<strong>Was tun Sie als Erstes?</strong>'
   ),150);
@@ -349,7 +357,7 @@ function process(raw){
 
   /* ── S9 zu früh ─────────────────────────────────────────────── */
   if(!S.s9 && has(t,KW.s9)){
-    const rdy=S.s1&&S.s2&&S.s3&&S.s4&&(S.s5||S.s5w)&&S.s6&&S.s7&&S.s8;
+    const rdy=S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8;
     if(!rdy){
       msg('Es gibt noch wichtigere Maßnahmen in dieser Situation.','b-warn');
       return;
@@ -392,7 +400,7 @@ function process(raw){
 
   /* ── S2-Sperre: Schritte 3–7 ohne S2 ───────────────────────── */
   if(!hit && S.s1 && !S.s2 && has(t,[
-      ...KW.s3,...KW.s4,...KW.s5,...KW.s5w,...KW.s6,...KW.s7,
+      ...KW.s3,...KW.s4,...KW.s5,...KW.s6,...KW.s7,
       'erste hilfe','ersthelfer','erste-hilfe'])){
     msg(cyc('s2p',NUDGE.s2_prereq),'b-warn');
     return;
@@ -435,25 +443,12 @@ function process(raw){
     }
   }
 
-  /* ── S5W: Wundversorgung ────────────────────────────────────── */
-  if(!hit && !S.s5w && has(t,KW.s5w)){
-    hit=true;
-    if(!S.s3){
-      msg('Prüfen Sie zuerst Stefans Zustand, bevor Sie weitere Maßnahmen einleiten.','b-warn');
-    } else {
-      S.s5w=1;
-      msg('<span class="slabel">✔ Schritt 5W – Wundversorgung</span>'+
-          'Druckverband angelegt. Die Blutung lässt deutlich nach.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s5w),900);
-    }
-  }
-
   /* ── "Erste Hilfe" – kontextsensitiv ────────────────────────── */
   if(!hit && has(t,['erste hilfe','ersthelfer','erste-hilfe'])){
     hit=true;
     if(!S.s3){
       msg('Prüfen Sie zuerst Stefans Zustand – was wissen Sie im Moment über seinen Zustand?','b-warn');
-    } else if(!S.s5 && !S.s5w){
+    } else if(!S.s5){
       S.s5=1;
       msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
           'Sie bringen Stefan in die stabile Seitenlage. Die Atemwege sind frei.','b-ok');
@@ -472,7 +467,7 @@ function process(raw){
   /* ── S6: Betreuen / Beobachten ──────────────────────────────── */
   if(!hit && has(t,KW.s6)){
     hit=true;
-    if(!S.s5 && !S.s5w){
+    if(!S.s5){
       msg(cyc('s6p',NUDGE.s6_prereq),'b-warn');
     } else if(S.s6){
       msg('Sie betreuen Stefan bereits.','b-bot');
@@ -515,7 +510,7 @@ function process(raw){
 
   /* ── S9: Dokumentation ──────────────────────────────────────── */
   if(!hit && has(t,KW.s9)){
-    const rdy=S.s1&&S.s2&&S.s3&&S.s4&&(S.s5||S.s5w)&&S.s6&&S.s7&&S.s8;
+    const rdy=S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8;
     if(rdy && !S.s9){
       hit=true; S.s9=1;
       msg('<span class="slabel">✔ Schritt 9 – Dokumentation</span>'+
@@ -591,7 +586,7 @@ function fischerCheck(followupText){
   // Follow-up anzeigen
   later(()=>msg(followupText,'b-bot'),900);
   // Fischer-Hinweis wenn S1-S8 done aber S9 fehlt
-  const main=S.s1&&S.s2&&S.s3&&S.s4&&(S.s5||S.s5w)&&S.s6&&S.s7&&S.s8;
+  const main=S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8;
   if(main&&!S.s9&&!S.done)
     later(()=>msg('Herr Fischer fragt Sie: <em>„Ist der Unfall schon dokumentiert? '+
                   'Unfallanzeige und Verbandbuch müssen ausgefüllt werden."</em>','b-bot'),1600);
@@ -600,7 +595,7 @@ function fischerCheck(followupText){
 
 function checkDone(){
   if(S.done)return;
-  if(!(S.s1&&S.s2&&S.s3&&S.s4&&(S.s5||S.s5w)&&S.s6&&S.s7&&S.s8&&S.s9))return;
+  if(!(S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8&&S.s9))return;
   S.done=true;
   later(()=>{
     document.getElementById('badge').textContent='ABGESCHLOSSEN';
@@ -611,7 +606,7 @@ function checkDone(){
         '&nbsp;✔ Schritt 2 – Bereich absichern<br>'+
         '&nbsp;✔ Schritt 3 – Zustand prüfen<br>'+
         '&nbsp;✔ Schritt 4 – Notruf 112<br>'+
-        '&nbsp;✔ Schritt 5 – Erste Hilfe (Seitenlage / Wundversorgung)<br>'+
+        '&nbsp;✔ Schritt 5 – Stabile Seitenlage<br>'+
         '&nbsp;✔ Schritt 6 – Betreuen &amp; Beobachten<br>'+
         '&nbsp;✔ Schritt 7 – Rettungsdienst einweisen<br>'+
         '&nbsp;✔ Schritt 8 – Vorgesetzten informieren<br>'+
@@ -628,7 +623,7 @@ function checkDone(){
    RESET
 ═══════════════════════════════════════════════════════════════ */
 function restart(){
-  Object.assign(S,{s1:0,s2:0,s3:0,s4:0,s5:0,s5w:0,s6:0,s7:0,s8:0,s9:0,
+  Object.assign(S,{s1:0,s2:0,s3:0,s4:0,s5:0,s6:0,s7:0,s8:0,s9:0,
                    notruf:false,nStep:0,done:false,fallback:0});
   Object.keys(NC).forEach(k=>NC[k]=0);
   document.getElementById('notruf-banner').style.display='none';
