@@ -111,7 +111,8 @@ const KW = {
 
   // S3 – Zustand prüfen
   // Separiertes "ansprechen" → "spreche an", und Bedeutungsvarianten
-  s3:['ansprech','spreche an','sprech an','spreche ihn','spreche stefan',
+  s3:['ansprech','spreche an','sprech an','spreche ihn','spreche stefan','sprech stefan',
+      'spreche den verletzten','sprech den verletzten','spreche den mann','spreche die person',
       'bewusstsein','atmung','puls','reagiert','atmet','lebenszeich',
       'bewusstlos','prüf','untersuchen',
       'ist er ok','ist er wach','ist er bewusst','ist er am leben',
@@ -201,6 +202,11 @@ const NUDGE = {
   s7_prereq:[ // tried S7 without S4
     'Der Rettungsdienst kommt von alleine? Oder haben Sie ihn bereits alarmiert?',
     'Wen wollen Sie einweisen – wurde der Rettungsdienst überhaupt schon verständigt?'
+  ],
+  s2_prereq:[ // tried S3–S7 without S2 done
+    'Ein weiterer Gabelstapler biegt auf den Gang ein. Der Fahrer hat Sie noch nicht gesehen.',
+    'Bevor Sie sich um Stefan kümmern: Ist der Unfallbereich für alle anderen sicher?',
+    'Was passiert, wenn jetzt ein weiterer Kollege ahnungslos in den Gang einbiegt?'
   ]
 };
 
@@ -382,6 +388,14 @@ function process(raw){
           'den Bereich einfahren oder eintreten.','b-ok');
       later(()=>msg(FOLLOWUP.s2,'b-bot'),900);
     }
+  }
+
+  /* ── S2-Sperre: Schritte 3–7 ohne S2 ───────────────────────── */
+  if(!hit && S.s1 && !S.s2 && has(t,[
+      ...KW.s3,...KW.s4,...KW.s5,...KW.s5w,...KW.s6,...KW.s7,
+      'erste hilfe','ersthelfer','erste-hilfe'])){
+    msg(cyc('s2p',NUDGE.s2_prereq),'b-warn');
+    return;
   }
 
   /* ── S3: Zustand prüfen ─────────────────────────────────────── */
