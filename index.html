@@ -86,47 +86,82 @@ const S = {s1:0,s2:0,s3:0,s4:0,s5:0,s5w:0,s6:0,s7:0,s8:0,s9:0,
 ═══════════════════════════════════════════════════════════════ */
 const KW = {
   // S1 – Eigenschutz / Überblick
-  // NICHT: "absichern", "schauen" allein – zu generisch
   s1:['überblick','umschau','orientier','umgebung','eigenschutz','gefahr',
-      'situation','lage einschätz','sehe mich um','schau mich um','guck mich um',
-      'kuck mich um','was ist los','was passiert','rundblick','was hier','sehe was',
-      'erst mal schau'],
+      'situation','lage einschätz',
+      // alle Konjugationsformen von "sich umschauen/umgucken"
+      'schaue mich um','schau mich um','schaue mich','schau mich',
+      'gucke mich um','guck mich um','gucke mich','guck mich',
+      'kucke mich um','kuck mich um','kucke mich','kuck mich',
+      'sehe mich um','seh mich um','sehe mich','seh mich',
+      'schaue ich mich','gucke ich mich',
+      'was ist los','was passiert','rundblick','was hier',
+      'erst mal schau','orientiere mich','verschaffe mir'],
 
   // S2 – Bereich absichern
-  s2:['absperr','gang sperr','bereich sperr','kollegen warn','blockier','schild',
-      'niemand rein','zugang sperr','zutritt','betreten verboten','einfahrt sperr',
-      'weg sperr','absicher','bereich absicher','warn','absperr','abriegeln'],
+  // Separierbare Verben: "absperren"→"sperre ab", "absichern"→"sichere ab"
+  s2:['absperr','sperr','gang sperr','bereich sperr','blockier','schild',
+      'niemand rein','zugang','zutritt','betreten verboten','abriegeln',
+      // separierte Formen
+      'sichere ab','sicher ab','sichere den','sichere es ab',
+      'sperre ab','sperre den','sperre es ab',
+      // umgangssprachlich / bedeutungsgleich
+      'kollegen bitten','bitte kollegen','bitte um hilfe',
+      'rufe um hilfe','hol hilfe','hole hilfe','um hilfe bitten',
+      'warn','kollegen warn','warne','warne die','absichern','absperren','sichern ab'],
 
   // S3 – Zustand prüfen
-  s3:['ansprech','bewusstsein','atmung','puls','reagiert','atmet','lebenszeich',
-      'bewusstlos','prüf','untersuchen','ist er ok','ist er wach','ist er bewusst',
-      'wie geht es ihm','lebt','lebt er','wach','ansprechbar','geht es stefan',
-      'checke','sehe nach','schaue nach','gucke nach','kucke nach'],
+  // Separiertes "ansprechen" → "spreche an", und Bedeutungsvarianten
+  s3:['ansprech','spreche an','sprech an','spreche ihn','spreche stefan',
+      'bewusstsein','atmung','puls','reagiert','atmet','lebenszeich',
+      'bewusstlos','prüf','untersuchen',
+      'ist er ok','ist er wach','ist er bewusst','ist er am leben',
+      'lebt','lebt er','wach','ansprechbar',
+      // "wie geht es ihm" in allen Wortstellungen
+      'wie geht es','wie es stefan','wie es ihm','stefan geht','geht es stefan',
+      'schaue wie','gucke wie','sehe wie','kucke wie',
+      'schaue ob er','gucke ob er','sehe ob er',
+      'schaue stefan an','schau stefan an','gucke stefan an',
+      'sehe nach stefan','schaue nach stefan','gucke nach stefan',
+      'checke','sehe nach','schaue nach','gucke nach'],
 
   // S4 – Notruf
-  s4:['112','notruf','rettung ruf','rettungsdienst','notarzt','ambulanz',
-      'feuerwehr','hilfe hol','hilfe ruf','sanitäter ruf','ruf an','ruf die'],
+  s4:['112','notruf','rettung ruf','rettungsdienst ruf','rettungsdienst alarm',
+      'notarzt','ambulanz','feuerwehr','hilfe hol','hilfe ruf',
+      'sanitäter ruf','ruf die 112','wähle die 112','wähle 112',
+      'ruf an die 112','notruf wählen','notruf rufen'],
 
   // S5 – Stabile Seitenlage
-  s5:['seitenlage','stabile lage','auf die seite','auf seite','dreh ihn','dreh stefan',
-      'drehe ihn','drehe stefan','stabile position','leg ihn auf','lager ihn',
-      'lege ihn','lagerung'],
+  s5:['seitenlage','stabile lage','auf die seite','auf seite',
+      'dreh ihn','dreh stefan','drehe ihn','drehe stefan',
+      'drehe ihn um','dreh ihn um','drehe stefan um',
+      'stabile position','leg ihn auf','lager ihn',
+      'lege ihn auf die seite','lege ihn','lagerung',
+      'auf die seite legen','auf die seite drehen'],
 
   // S5W – Wundversorgung
   s5w:['druckverband','blut still','verband anlegen','verbinde','blutung',
-       'kompress','wunde','druck auf','drücke auf','blut stopp','erste hilfe wunde'],
+       'kompress','wunde','druck auf','drücke auf','blut stopp',
+       'verband','verbände','wunde versorgen','wunde behandeln'],
 
   // S6 – Betreuen / Beobachten
   s6:['betreu','bleibe bei','bleib bei','bei ihm','bei stefan','beruhig',
-      'decke','wärme','kümmere','kümmern um','beobacht','nicht allein',
-      'dabei bleib','aufpass','sitze bei','sitze neben','sitze bei stefan',
-      'halte wache','wache','bleib'],
+      'decke','wärme','kümmere','beobacht','nicht allein',
+      'dabei bleib','aufpass','sitze bei','sitze neben',
+      'halte wache','wache','bleib',
+      'bleibe neben','bleib neben','bleibe dort','halte ihn'],
 
   // S7 – Rettungsdienst einweisen
-  s7:['einweis','eingang','sanitäter empfang','jemand raus','jemanden raus',
-      'nach draußen','draußen stell','jemand schick','jemanden schick','lotsen',
-      'weg zeig','abhol','empfang','jemand zum eingang','jemanden zum eingang',
-      'raus schick','rausschick','draußen wart','rausgeh'],
+  // Separiertes "einweisen" → "weise ein" / zu-Infinitiv "einzuweisen"
+  s7:['einweis','einzuweisen','weise ein','weise den rettungsdienst',
+      'weise die sanitäter','weise den rettungswagen',
+      'weise den kollegen','weise jemanden','weise jemand',
+      'eingang','sanitäter empfang',
+      'jemand raus','jemanden raus','nach draußen','draußen',
+      'jemand schick','jemanden schick','schicke jemand','schicke einen',
+      'schick jemand','schick einen','kollegen raus','kollegen nach draußen',
+      'lotsen','weg zeig','abhol',
+      'jemand zum eingang','jemanden zum eingang','kollegen zum eingang',
+      'raus schick','rausschick','rausgeh'],
 
   // S8 – Vorgesetzten informieren
   s8:['vorgesetzt','schichtleiter','fischer','informier','benachrichtig',
@@ -174,7 +209,7 @@ const NUDGE = {
 ═══════════════════════════════════════════════════════════════ */
 const TIPP = {
   s1:'Schauen Sie sich in der Halle um und prüfen Sie, ob weitere Gefahren vorhanden sind. Beispiel: „Ich verschaffe mir einen Überblick" oder „Ich schaue mich um".',
-  s2:'Sichern Sie den Bereich, damit niemand in die Gefahrenzone gerät. Beispiel: „Ich sperre den Gang ab" oder „Ich warne die Kollegen".',
+  s2:'Sichern Sie den Bereich, damit niemand in die Gefahrenzone gerät. Beispiel: „Ich sperre den Gang ab", „Ich sichere den Bereich ab" oder „Ich bitte Kollegen um Hilfe".',
   s3:'Prüfen Sie Stefans Zustand. Beispiel: „Ich spreche Stefan an" oder „Ich prüfe seine Atmung".',
   s4:'Alarmieren Sie den Rettungsdienst. Beispiel: „Ich rufe den Notruf" oder „Ich wähle die 112".',
   s5:'Bringen Sie Stefan in eine sichere Position. Beispiel: „Ich lege Stefan in die stabile Seitenlage" oder „Ich drehe ihn auf die Seite".',
@@ -343,8 +378,8 @@ function process(raw){
     } else {
       S.s2=1; hit=true;
       msg('<span class="slabel">✔ Schritt 2 – Bereich absichern</span>'+
-          'Sie sperren den Gang ab und warnen die Kollegen. Niemand darf mehr in den Bereich '+
-          'einfahren oder eintreten.','b-ok');
+          'Sie sichern den Unfallbereich ab und bitten Kollegen um Hilfe. Niemand darf mehr in '+
+          'den Bereich einfahren oder eintreten.','b-ok');
       later(()=>msg(FOLLOWUP.s2,'b-bot'),900);
     }
   }
