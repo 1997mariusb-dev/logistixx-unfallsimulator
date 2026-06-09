@@ -371,205 +371,110 @@ const WRONG_ACTIONS = [
 
 function process(raw){
   const t=raw;
-  let hit=false;
 
-  /* ── Explizit falsche Handlungen ────────────────────────────── */
+  /* ── Gefährliche Handlungen immer blockieren ────────────────── */
   for(const wa of WRONG_ACTIONS){
-    if(has(t,wa.kw)){
-      msg(wa.msg,'b-konsequenz');
-      return;
-    }
+    if(has(t,wa.kw)){ msg(wa.msg,'b-konsequenz'); return; }
+  }
+  if(S.done) return;
+
+  /* ── Erwarteter Schritt bestimmt, was erlaubt ist ───────────── */
+  const exp=expected();
+  if(!exp) return;
+
+  /* Keyword-Mapping: s5 und s6 akzeptieren auch "erste hilfe" */
+  const KM={
+    s1:KW.s1, s2:KW.s2, s3:KW.s3, s4:KW.s4,
+    s5:[...KW.s5,'erste hilfe','ersthelfer','erste-hilfe'],
+    s6:[...KW.s6,'erste hilfe','ersthelfer','erste-hilfe'],
+    s7:KW.s7, s8:KW.s8, s9:KW.s9
+  };
+  const ORD=['s1','s2','s3','s4','s5','s6','s7','s8','s9'];
+  const ei=ORD.indexOf(exp);
+
+  /* ── Eingabe trifft genau den erwarteten Schritt → ausführen ─ */
+  if(has(t,KM[exp])){ doStep(exp); return; }
+
+  /* ── Eingabe trifft einen anderen Schritt ────────────────────── */
+  for(const s of ORD){
+    if(s===exp||!has(t,KM[s])) continue;
+    if(ORD.indexOf(s)<ei)
+      msg('Das haben Sie bereits erledigt. Was ist jetzt als Nächstes zu tun?','b-bot');
+    else
+      msg(skipMsg(exp),'b-konsequenz');
+    return;
   }
 
-  /* ── S9 zu früh ─────────────────────────────────────────────── */
-  if(!S.s9 && has(t,KW.s9)){
-    const rdy=S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8;
-    if(!rdy){
-      msg('⚠️ Folge: Die Unfallanzeige liegt auf dem Schreibtisch – aber Stefan braucht jetzt noch Ihre Hilfe. Bürokratie kommt nach der Ersten Hilfe.','b-konsequenz');
-      return;
-    }
-  }
+  /* ── Fallback ────────────────────────────────────────────────── */
+  const FB=['Das habe ich nicht ganz verstanden. Wie meinen Sie das?',
+            'Überlegen Sie nochmal, was jetzt die richtige Maßnahme ist.',
+            'Was genau meinen Sie damit? Beschreiben Sie Ihren nächsten Schritt etwas genauer.'];
+  msg(FB[S.fallback++%FB.length],'b-bot');
+}
 
-  /* ── S1: Überblick / Eigenschutz ────────────────────────────── */
-  if(!hit && has(t,KW.s1)){
-    if(S.s1){
-      hit=true;
-      msg('Das haben Sie bereits getan. Was ist Ihr nächster Schritt?','b-bot');
-    } else {
-      S.s1=1; hit=true;
+/* Konsequenz-Nachricht: was passiert, weil Schritt <missing> fehlt */
+function skipMsg(missing){
+  if(missing==='s1') return cyc('s1',NUDGE.s1);
+  if(missing==='s2') return cyc('s2p',NUDGE.s2_prereq);
+  if(missing==='s3') return cyc('s5p',NUDGE.s5_prereq);
+  if(missing==='s4') return '⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen? Rufen Sie zuerst den Notruf!';
+  if(missing==='s5') return cyc('s6p',NUDGE.s6_prereq);
+  if(missing==='s6') return '⚠️ Folge: Ihr Kollege wartet am Eingang – Stefan liegt noch ohne Betreuung auf dem Boden. Betreuen Sie Stefan zuerst.';
+  if(missing==='s7') return '⚠️ Folge: Herr Fischer koordiniert – aber der Rettungswagen findet den Eingang nicht. Niemand weist ihn ein.';
+  if(missing==='s8') return '⚠️ Folge: Die Unfallanzeige – aber Stefan braucht noch Ihre volle Aufmerksamkeit.';
+  return 'Überlegen Sie nochmal, was jetzt die richtige Maßnahme ist.';
+}
+
+/* Schritt ausführen */
+function doStep(s){
+  switch(s){
+    case 's1':
+      S.s1=1;
       msg('<span class="slabel">✔ Schritt 1 – Eigenschutz &amp; Überblick</span>'+
           'Sie verschaffen sich einen Überblick: Der Gabelstapler steht still, der Fahrer hat '+
           'das Fahrzeug gesichert. Die Umgebung ist ruhig – Sie sind in Sicherheit.','b-ok');
-      later(()=>msg(FOLLOWUP.s1,'b-bot'),900);
-    }
-  }
-
-  /* ── S1-Sperre: anderer Schritt ohne S1 ─────────────────────── */
-  if(!hit && !S.s1 && has(t,OTHER_KW)){
-    msg(cyc('s1',NUDGE.s1),'b-konsequenz');
-    return;
-  }
-
-  /* ── S2: Bereich absichern ──────────────────────────────────── */
-  if(!hit && S.s1 && has(t,KW.s2)){
-    if(S.s2){
-      hit=true;
-      msg('Den Bereich haben Sie bereits gesichert.','b-bot');
-    } else {
-      S.s2=1; hit=true;
+      later(()=>msg(FOLLOWUP.s1,'b-bot'),900); break;
+    case 's2':
+      S.s2=1;
       msg('<span class="slabel">✔ Schritt 2 – Bereich absichern</span>'+
           'Sie sichern den Unfallbereich ab und bitten Kollegen um Hilfe. Niemand darf mehr in '+
           'den Bereich einfahren oder eintreten.','b-ok');
-      later(()=>msg(FOLLOWUP.s2,'b-bot'),900);
-    }
-  }
-
-  /* ── S2-Sperre: Schritte 3–7 ohne S2 ───────────────────────── */
-  if(!hit && S.s1 && !S.s2 && has(t,[
-      ...KW.s3,...KW.s4,...KW.s5,...KW.s6,...KW.s7,
-      'erste hilfe','ersthelfer','erste-hilfe'])){
-    msg(cyc('s2p',NUDGE.s2_prereq),'b-konsequenz');
-    return;
-  }
-
-  /* ── S3: Zustand prüfen ─────────────────────────────────────── */
-  if(!hit && S.s1 && has(t,KW.s3)){
-    if(S.s3){
-      hit=true;
-      msg('Sie haben Stefans Zustand bereits geprüft.','b-bot');
-    } else {
-      S.s3=1; hit=true;
+      later(()=>msg(FOLLOWUP.s2,'b-bot'),900); break;
+    case 's3':
+      S.s3=1;
       msg('<span class="slabel">✔ Schritt 3 – Zustand prüfen</span>'+
           'Sie sprechen Stefan laut an – keine Reaktion. Atmung ist hörbar und regelmäßig. '+
           'Schwellung am linken Bein sichtbar.','b-ok');
-      later(()=>msg(FOLLOWUP.s3,'b-bot'),900);
-    }
-  }
-
-  /* ── S4: Notruf 112 ─────────────────────────────────────────── */
-  if(!hit && !S.s4 && has(t,KW.s4)){
-    hit=true;
-    if(!S.s3){
-      msg(cyc('s3f',NUDGE.s3_for_s4),'b-konsequenz');
-    } else {
-      startNotruf();
-    }
-  }
-
-  /* ── S5: Stabile Seitenlage ─────────────────────────────────── */
-  if(!hit && !S.s5 && has(t,KW.s5)){
-    hit=true;
-    if(!S.s3){
-      msg(cyc('s5p',NUDGE.s5_prereq),'b-konsequenz');
-    } else if(!S.s4){
-      msg('⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen? Rufen Sie zuerst den Notruf!','b-konsequenz');
-    } else {
+      later(()=>msg(FOLLOWUP.s3,'b-bot'),900); break;
+    case 's4':
+      startNotruf(); break;
+    case 's5':
       S.s5=1;
       msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
           'Stefan liegt in der stabilen Seitenlage. Die Atemwege sind frei – er atmet weiterhin regelmäßig.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s5),900);
-    }
-  }
-
-  /* ── "Erste Hilfe" – kontextsensitiv ────────────────────────── */
-  if(!hit && has(t,['erste hilfe','ersthelfer','erste-hilfe'])){
-    hit=true;
-    if(!S.s1){
-      msg(cyc('s1',NUDGE.s1),'b-konsequenz');
-    } else if(!S.s2){
-      msg(cyc('s2p',NUDGE.s2_prereq),'b-konsequenz');
-    } else if(!S.s3){
-      msg('⚠️ Folge: Sie handeln blind – ohne Zustandsprüfung wissen Sie nicht, ob Stefan eine Wirbelsäulenverletzung hat. Das könnte jede Maßnahme gefährlich machen.','b-konsequenz');
-    } else if(!S.s4){
-      msg('⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen? Rufen Sie zuerst den Notruf!','b-konsequenz');
-    } else if(!S.s5){
-      S.s5=1;
-      msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
-          'Sie bringen Stefan in die stabile Seitenlage. Die Atemwege sind frei.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s5),900);
-    } else if(!S.s6){
+      later(()=>fischerCheck(FOLLOWUP.s5),900); break;
+    case 's6':
       S.s6=1;
       msg('<span class="slabel">✔ Schritt 6 – Betreuen &amp; Beobachten</span>'+
           'Sie bleiben bei Stefan, sprechen beruhigend auf ihn ein und beobachten seine Atmung. '+
           'Nach ca. 8 Minuten ist eine Sirene zu hören.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s6),900);
-    } else {
-      msg('Die Erste Hilfe haben Sie bereits geleistet. Was ist jetzt noch zu tun?','b-bot');
-    }
-  }
-
-  /* ── S6: Betreuen / Beobachten ──────────────────────────────── */
-  if(!hit && has(t,KW.s6)){
-    hit=true;
-    if(!S.s5){
-      msg(cyc('s6p',NUDGE.s6_prereq),'b-konsequenz');
-    } else if(S.s6){
-      msg('Sie betreuen Stefan bereits.','b-bot');
-    } else {
-      S.s6=1;
-      msg('<span class="slabel">✔ Schritt 6 – Betreuen &amp; Beobachten</span>'+
-          'Sie bleiben bei Stefan, sprechen beruhigend auf ihn ein und beobachten seine Atmung. '+
-          'Nach ca. 8 Minuten ist eine Sirene zu hören.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s6),900);
-    }
-  }
-
-  /* ── S7: Rettungsdienst einweisen ───────────────────────────── */
-  if(!hit && has(t,KW.s7)){
-    hit=true;
-    if(!S.s4){
-      msg(cyc('s7p',NUDGE.s7_prereq),'b-konsequenz');
-    } else if(!S.s6){
-      msg('⚠️ Folge: Ihr Kollege eilt zum Eingang – Stefan liegt jedoch noch ohne Betreuung auf dem Boden. Kümmern Sie sich zuerst um Stefan, bevor Sie jemanden nach draußen schicken.','b-konsequenz');
-    } else if(S.s7){
-      msg('Den Rettungsdienst haben Sie bereits eingewiesen.','b-bot');
-    } else {
+      later(()=>fischerCheck(FOLLOWUP.s6),900); break;
+    case 's7':
       S.s7=1;
       msg('<span class="slabel">✔ Schritt 7 – Rettungsdienst einweisen</span>'+
           'Ein Kollege eilt zum Haupteingang. Die Sanitäter treffen mit Trage und Ausrüstung ein.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s7),900);
-    }
-  }
-
-  /* ── S8: Vorgesetzten informieren ───────────────────────────── */
-  if(!hit && S.s1 && has(t,KW.s8)){
-    hit=true;
-    if(S.s8){
-      msg('Herr Fischer ist bereits informiert.','b-bot');
-    } else if(!S.s5){
-      msg('⚠️ Folge: Herr Fischer wird informiert – aber Stefan liegt noch ohne Erste Hilfe auf dem Boden. Die Versorgung des Verletzten hat absoluten Vorrang!','b-konsequenz');
-    } else if(!S.s6){
-      msg('⚠️ Folge: Herr Fischer ist unterwegs – Stefan liegt versorgt, aber allein auf dem Boden. Wer überwacht in der Zwischenzeit seinen Zustand?','b-konsequenz');
-    } else if(!S.s7){
-      msg('⚠️ Folge: Herr Fischer koordiniert – der Rettungswagen sucht jedoch noch nach dem richtigen Eingang. Niemand weist ihn ein.','b-konsequenz');
-    } else {
+      later(()=>fischerCheck(FOLLOWUP.s7),900); break;
+    case 's8':
       S.s8=1;
       msg('<span class="slabel">✔ Schritt 8 – Vorgesetzten informieren</span>'+
           'Schichtleiter Fischer wurde informiert. Er sichert den Bereich und koordiniert die weiteren Maßnahmen.','b-ok');
-      later(()=>fischerCheck(FOLLOWUP.s8),900);
-    }
-  }
-
-  /* ── S9: Dokumentation ──────────────────────────────────────── */
-  if(!hit && has(t,KW.s9)){
-    const rdy=S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8;
-    if(rdy && !S.s9){
-      hit=true; S.s9=1;
+      later(()=>fischerCheck(FOLLOWUP.s8),900); break;
+    case 's9':
+      S.s9=1;
       msg('<span class="slabel">✔ Schritt 9 – Dokumentation</span>'+
           'Die Unfallanzeige wurde ausgefüllt und an Schichtleiter Fischer weitergegeben. '+
           'Der Vorfall ist ordnungsgemäß im Verbandbuch dokumentiert.','b-ok');
-      later(()=>checkDone(),900);
-    }
-  }
-
-  /* ── Fallback: neutral, kein Step verraten ──────────────────── */
-  if(!hit){
-    const opts=[
-      'Das habe ich nicht ganz verstanden. Wie meinen Sie das?',
-      'Überlegen Sie nochmal, was jetzt die richtige Maßnahme ist.',
-      'Was genau meinen Sie damit? Beschreiben Sie Ihren nächsten Schritt etwas genauer.'
-    ];
-    msg(opts[S.fallback++%opts.length],'b-bot');
+      later(()=>checkDone(),900); break;
   }
 }
 
