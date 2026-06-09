@@ -26,6 +26,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
 .b-warn{background:#fff8e1;color:#6d4c00;border-left:4px solid #ffa000;align-self:flex-start;border-radius:10px;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .b-ok{background:#e8f5e9;color:#1b5e20;border-left:4px solid #43a047;align-self:flex-start;border-radius:10px;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
 .b-err{background:#fce4ec;color:#880e4f;border-left:4px solid #e91e63;align-self:flex-start;border-radius:10px;border-bottom-left-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.b-konsequenz{background:#fbe9e7;color:#b71c1c;border-left:4px solid #e53935;align-self:flex-start;border-radius:10px;border-bottom-left-radius:4px;box-shadow:0 2px 5px rgba(229,57,53,.2);font-weight:500}
 .slabel{display:block;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.6px;margin-bottom:5px;color:#2e7d32}
 
 #notruf-panel{display:none;background:#f1f8e9;border-top:2px solid #aed581;padding:12px 14px;flex-shrink:0}
@@ -192,30 +193,30 @@ const OTHER_KW = [...KW.s2,...KW.s3,...KW.s4,...KW.s5,
 ═══════════════════════════════════════════════════════════════ */
 const NUDGE = {
   s1:[ // fired when OTHER_KW matched but S1 not done
-    'Moment – haben Sie schon überprüft, ob der Bereich für Sie selbst sicher ist?',
-    'Ihr Kollege Ralf ruft: „Warte kurz – schau dich erst mal um!"',
-    'Was sollte an einem Unfallort immer als Allerstes passieren, bevor man handelt?'
+    '⚠️ Folge: Sie eilen zu Stefan – plötzlich quietschen Reifen. Ein Gabelstapler bremst zentimeter vor Ihnen. Ohne Überblick haben Sie sich selbst in Gefahr gebracht.',
+    '⚠️ Folge: Ein zweiter Stapler dreht vom Hauptgang in Ihren Gang ein – der Fahrer sieht Sie nicht. Nur ein Notbremsmanöver verhindert das Schlimmste. Eigenschutz kommt zuerst.',
+    '⚠️ Folge: Sie stolpern über ein Ladegerät auf dem Boden, das Sie im Stress übersehen haben. Wer übernimmt jetzt die Situation?'
   ],
   s3_for_s4:[ // tried to call 112 without checking condition
-    'Die Leitstelle wird sofort fragen, wie es dem Verletzten geht. Was wissen Sie im Moment darüber?',
-    'Bevor Sie 112 wählen: Was können Sie der Leitstelle über Stefans Zustand berichten?'
+    '⚠️ Folge: Die Leitstelle fragt sofort: „Atmet die Person?" – Sie wissen es nicht. „Ist sie bei Bewusstsein?" – Keine Antwort. Der Einsatz wird als niedrige Priorität eingestuft. Wertvolle Minuten gehen verloren.',
+    '⚠️ Folge: Der Rettungswagen trifft ohne genaue Verletzungsinfo ein. Der Notarzt bringt die falsche Ausrüstung mit – ein Schocktrauma-Team wäre nötig gewesen. Prüfen Sie zuerst Stefans Zustand.'
   ],
   s5_prereq:[ // tried S5 without S3
-    'Moment – wissen Sie überhaupt, in welchem Zustand Stefan ist?',
-    'Bevor Sie Stefan bewegen: Haben Sie bereits geprüft, wie es ihm geht?'
+    '⚠️ Folge: Sie drehen Stefan auf die Seite – er stöhnt schmerzhaft auf. Ohne Zustandsprüfung wussten Sie nicht, dass eine Wirbelsäulenverletzung möglich ist. Prüfen Sie zuerst seinen Zustand.',
+    '⚠️ Folge: Sie greifen nach Stefans Arm um ihn zu drehen. Sein verletztes Bein verdreht sich. Ohne Zustandsprüfung riskieren Sie eine lebensbedrohliche Verschlimmerung der Verletzungen.'
   ],
-  s6_prereq:[ // tried S6 without S5/S5W
-    'Stefan liegt noch auf dem Rücken, Mund leicht geöffnet. Er atmet – aber ist das in dieser Lage sicher?',
-    'Was ist bei einer bewusstlosen Person die wichtigste Sofortmaßnahme, bevor man bei ihr bleibt?'
+  s6_prereq:[ // tried S6 without S5
+    '⚠️ Folge: Sie setzen sich neben Stefan und warten. Er liegt auf dem Rücken, Kopf leicht nach hinten gekippt. Plötzlich beginnt er zu würgen – ohne Seitenlage besteht Erstickungsgefahr durch Erbrochenes.',
+    '⚠️ Folge: Stefan liegt auf dem Rücken, Mund geöffnet, Atemwege ungesichert. Ohne stabile Seitenlage können Blut oder Erbrochenes die Atemwege blockieren – lebensbedrohlich für einen Bewusstlosen.'
   ],
   s7_prereq:[ // tried S7 without S4
-    'Der Rettungsdienst kommt von alleine? Oder haben Sie ihn bereits alarmiert?',
-    'Wen wollen Sie einweisen – wurde der Rettungsdienst überhaupt schon verständigt?'
+    '⚠️ Folge: Ihr Kollege wartet seit 10 Minuten am Eingang – niemand kommt. Der Rettungsdienst wurde nie alarmiert. Stefan liegt weiterhin ohne professionelle Hilfe auf dem Boden.',
+    '⚠️ Folge: Ein Krankenwagen fährt zufällig an der Halle vorbei und biegt weiter ab. Ohne Notruf kommt keine Hilfe – alarmieren Sie zuerst den Rettungsdienst.'
   ],
   s2_prereq:[ // tried S3–S7 without S2 done
-    'Ein weiterer Gabelstapler biegt auf den Gang ein. Der Fahrer hat Sie noch nicht gesehen.',
-    'Bevor Sie sich um Stefan kümmern: Ist der Unfallbereich für alle anderen sicher?',
-    'Was passiert, wenn jetzt ein weiterer Kollege ahnungslos in den Gang einbiegt?'
+    '⚠️ Folge: Während Sie sich zu Stefan bücken, fährt ein Elektrokarren ahnungslos in den Gang. Stefan wird ein zweites Mal gefährdet. Der Bereich muss zuerst gesichert werden.',
+    '⚠️ Folge: Ein Kollege läuft mit gesenktem Blick auf sein Handy in den Unfallbereich und stolpert fast über Stefan. Der Bereich war nicht gesichert – sichern Sie ihn jetzt ab.',
+    '⚠️ Folge: Der Staplerfahrer ist verwirrt und fährt langsam vorwärts statt rückwärts. Der Bereich ist noch aktiv – sichern Sie ihn sofort ab, bevor Sie sich um Stefan kümmern.'
   ]
 };
 
@@ -255,33 +256,33 @@ const NQ = [
   {q:'Leitstelle: „Feuerwehr und Rettungsdienst – wo genau sind Sie?"',
    a:[{t:'LOGISTIXX GmbH Bingen am Rhein – Lagerhalle, Gang 7',ok:true},
       {t:'Irgendwo in einer Lagerhalle in Bingen',ok:false,
-       f:'Die Leitstelle braucht eine genaue Adresse. Firmenname und Standort in der Halle sind wichtig.'},
+       f:'⚠️ Folge: Der Rettungswagen sucht 5 Minuten nach dem richtigen Betrieb. Stefan liegt weiterhin ohne Hilfe. Eine genaue Adresse mit Firmenname und Hallenbereich rettet Zeit.'},
       {t:'Ich kenne die genaue Adresse nicht',ok:false,
-       f:'Sie kennen Ihren Arbeitsort. Firmenname und Stadt sind Mindestangabe – das entscheidet, wie schnell Hilfe kommt.'}]},
+       f:'⚠️ Folge: Die Leitstelle schickt den Rettungswagen zunächst zur falschen Adresse. Sie kennen Ihren Arbeitsort – Firmenname und Stadt sind Mindestangabe.'}]},
   {q:'Leitstelle: „Was ist passiert?"',
    a:[{t:'Arbeitsunfall – Mitarbeiter von Gabelstapler erfasst, bewusstlos',ok:true},
       {t:'Jemand ist gestürzt und liegt auf dem Boden',ok:false,
-       f:'Der Hergang ist unvollständig. Die Leitstelle muss wissen, dass ein Fahrzeug beteiligt war – das beeinflusst die Einsatzplanung.'},
+       f:'⚠️ Folge: Die Leitstelle schickt nur einen Rettungswagen – kein Notarzt, kein Trauma-Team. Der Hergang mit dem Fahrzeug ist entscheidend für die Einsatzplanung.'},
       {t:'Ein kleiner Unfall mit einem Stapler, nichts Schlimmes',ok:false,
-       f:'Eine bewusstlose Person ist immer ein Notfall. Schildern Sie den Sachverhalt ehrlich und vollständig.'}]},
+       f:'⚠️ Folge: Die Leitstelle wertet die Lage als Bagatelle – niedriger Einsatzrang. Stefan bleibt ohne Notarzt. Eine bewusstlose Person ist immer ein Notfall.'}]},
   {q:'Leitstelle: „Wie viele Personen sind verletzt?"',
    a:[{t:'Eine Person verletzt',ok:true},
       {t:'Zwei Personen – Stefan und der Staplerfahrer',ok:false,
-       f:'Der Staplerfahrer steht unverletzt am Fahrzeug. Geben Sie nur tatsächlich verletzte Personen an.'},
+       f:'⚠️ Folge: Ein zweites Rettungsteam rückt unnötig aus. Der Staplerfahrer steht unverletzt am Fahrzeug – falsche Angaben blockieren Ressourcen, die anderswo gebraucht werden.'},
       {t:'Das weiß ich gerade nicht genau',ok:false,
-       f:'Sie können die Lage überblicken: Stefan liegt verletzt auf dem Boden, der Staplerfahrer ist unverletzt.'}]},
+       f:'⚠️ Folge: Die Leitstelle plant den Einsatz nicht korrekt. Sie können die Lage überblicken: Stefan liegt verletzt, der Staplerfahrer ist unverletzt. Nennen Sie konkrete Zahlen.'}]},
   {q:'Leitstelle: „Welche Verletzungen sind erkennbar?"',
    a:[{t:'Bewusstlos, Atmung vorhanden, Beinverletzung sichtbar',ok:true},
       {t:'Bewusstlos, keine Atmung feststellbar',ok:false,
-       f:'Sie haben Stefans Atmung bereits geprüft – sie ist vorhanden. Korrekte Angaben sind entscheidend für die Einsatzplanung.'},
+       f:'⚠️ Folge: Ein Reanimationsteam rückt aus – obwohl Stefan atmet. Die Leitstelle plant mit falschen Informationen. Schildern Sie, was Sie tatsächlich beobachtet haben.'},
       {t:'Ansprechbar, klagt über Schmerzen am Bein',ok:false,
-       f:'Stefan reagiert nicht auf Ansprache – er ist bewusstlos. Schildern Sie den tatsächlichen Zustand.'}]},
+       f:'⚠️ Folge: Kein Notarzt wird angefordert, weil der Patient laut Meldung ansprechbar ist. Stefan ist jedoch bewusstlos – schildern Sie den tatsächlichen Zustand.'}]},
   {q:'Leitstelle: „Rettungswagen ist alarmiert. Bleiben Sie bitte in der Leitung."',
    a:[{t:'Verstanden – ich warte auf Rückfragen',ok:true},
       {t:'Ich lege auf, ich muss mich um den Verletzten kümmern',ok:false,
-       f:'Legen Sie nicht auf. Die Leitstelle kann Sie anleiten und benötigt Sie für eventuelle Rückfragen.'},
+       f:'⚠️ Folge: Die Leitstelle verliert den Kontakt. Eine wichtige Rückfrage bleibt unbeantwortet – der Rettungsdienst trifft ohne aktuellen Lagebericht ein. Bleiben Sie in der Leitung.'},
       {t:'Bitte beeilen Sie sich, ich habe keine Zeit mehr',ok:false,
-       f:'Der Rettungsdienst ist bereits alarmiert. Bleiben Sie ruhig in der Leitung – das ist das korrekte Verhalten.'}]}
+       f:'⚠️ Folge: Die Leitstelle kann Sie nicht für weitere Anweisungen erreichen. Im Notfall zählt Ruhe – der Rettungsdienst ist alarmiert, bleiben Sie in der Leitung.'}]}
 ];
 
 /* ═══════════════════════════════════════════════════════════════
@@ -351,15 +352,39 @@ function handleInput(){
   later(()=>process(raw));
 }
 
+/* ═══════════════════════════════════════════════════════════════
+   FALSCHE HANDLUNGEN  (gefährliche Aktionen mit Konsequenz)
+═══════════════════════════════════════════════════════════════ */
+const WRONG_ACTIONS = [
+  { kw:['schüttle','rüttle','wackel','klatsche stefan','schlag stefan','schlage stefan'],
+    msg:'⚠️ Folge: Sie schütteln Stefan – bei einer möglichen Wirbelsäulenverletzung können Sie so bleibende Schäden oder eine Lähmung verursachen. Bewusstlose Personen niemals schütteln!' },
+  { kw:['gebe ihm wasser','gib ihm wasser','gebe ihm etwas zu trinken','gib ihm etwas','flüssigkeit geben','trinken lassen'],
+    msg:'⚠️ Folge: Stefan ist bewusstlos. Flüssigkeit einzuflößen führt bei Bewusstlosen zu akuter Erstickungsgefahr – er kann nicht schlucken!' },
+  { kw:['stelle ihn auf','stell ihn auf','richte ihn auf','helfe ihm aufzustehen','hilf ihm aufzustehen','setze ihn auf','setz ihn auf'],
+    msg:'⚠️ Folge: Sie versuchen Stefan aufzurichten – er sackt sofort wieder zusammen und zieht Sie mit. Stürze und Verschlimmerung der Verletzungen sind die Folge.' },
+  { kw:['verlasse den','verlasse stefan','gehe weg','geh weg','lasse ihn allein','lass ihn allein','laufe weg','renne weg'],
+    msg:'⚠️ Folge: Sie verlassen Stefan – sein Zustand verschlechtert sich unbeobachtet. Eine bewusstlose Person darf niemals allein gelassen werden.' },
+  { kw:['entferne den helm','nehme den helm ab','nimm den helm ab','ziehe den helm ab','zieh den helm ab'],
+    msg:'⚠️ Folge: Den Helm eines Bewusstlosen zu entfernen kann eine Halswirbelverletzung massiv verschlimmern. Das ist ausschließlich Aufgabe des Rettungsdienstes.' }
+];
+
 function process(raw){
   const t=raw;
   let hit=false;
+
+  /* ── Explizit falsche Handlungen ────────────────────────────── */
+  for(const wa of WRONG_ACTIONS){
+    if(has(t,wa.kw)){
+      msg(wa.msg,'b-konsequenz');
+      return;
+    }
+  }
 
   /* ── S9 zu früh ─────────────────────────────────────────────── */
   if(!S.s9 && has(t,KW.s9)){
     const rdy=S.s1&&S.s2&&S.s3&&S.s4&&S.s5&&S.s6&&S.s7&&S.s8;
     if(!rdy){
-      msg('Es gibt noch wichtigere Maßnahmen in dieser Situation.','b-warn');
+      msg('⚠️ Folge: Die Unfallanzeige liegt auf dem Schreibtisch – aber Stefan braucht jetzt noch Ihre Hilfe. Bürokratie kommt nach der Ersten Hilfe.','b-konsequenz');
       return;
     }
   }
@@ -380,7 +405,7 @@ function process(raw){
 
   /* ── S1-Sperre: anderer Schritt ohne S1 ─────────────────────── */
   if(!hit && !S.s1 && has(t,OTHER_KW)){
-    msg(cyc('s1',NUDGE.s1),'b-warn');
+    msg(cyc('s1',NUDGE.s1),'b-konsequenz');
     return;
   }
 
@@ -402,7 +427,7 @@ function process(raw){
   if(!hit && S.s1 && !S.s2 && has(t,[
       ...KW.s3,...KW.s4,...KW.s5,...KW.s6,...KW.s7,
       'erste hilfe','ersthelfer','erste-hilfe'])){
-    msg(cyc('s2p',NUDGE.s2_prereq),'b-warn');
+    msg(cyc('s2p',NUDGE.s2_prereq),'b-konsequenz');
     return;
   }
 
@@ -424,7 +449,7 @@ function process(raw){
   if(!hit && !S.s4 && has(t,KW.s4)){
     hit=true;
     if(!S.s3){
-      msg(cyc('s3f',NUDGE.s3_for_s4),'b-warn');
+      msg(cyc('s3f',NUDGE.s3_for_s4),'b-konsequenz');
     } else {
       startNotruf();
     }
@@ -434,7 +459,7 @@ function process(raw){
   if(!hit && !S.s5 && has(t,KW.s5)){
     hit=true;
     if(!S.s3){
-      msg(cyc('s5p',NUDGE.s5_prereq),'b-warn');
+      msg(cyc('s5p',NUDGE.s5_prereq),'b-konsequenz');
     } else {
       S.s5=1;
       msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
@@ -447,7 +472,7 @@ function process(raw){
   if(!hit && has(t,['erste hilfe','ersthelfer','erste-hilfe'])){
     hit=true;
     if(!S.s3){
-      msg('Prüfen Sie zuerst Stefans Zustand – was wissen Sie im Moment über seinen Zustand?','b-warn');
+      msg('⚠️ Folge: Sie handeln blind – ohne Zustandsprüfung wissen Sie nicht, ob Stefan eine Wirbelsäulenverletzung hat. Das könnte jede Maßnahme gefährlich machen.','b-konsequenz');
     } else if(!S.s5){
       S.s5=1;
       msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
@@ -468,7 +493,7 @@ function process(raw){
   if(!hit && has(t,KW.s6)){
     hit=true;
     if(!S.s5){
-      msg(cyc('s6p',NUDGE.s6_prereq),'b-warn');
+      msg(cyc('s6p',NUDGE.s6_prereq),'b-konsequenz');
     } else if(S.s6){
       msg('Sie betreuen Stefan bereits.','b-bot');
     } else {
@@ -484,7 +509,7 @@ function process(raw){
   if(!hit && has(t,KW.s7)){
     hit=true;
     if(!S.s4){
-      msg(cyc('s7p',NUDGE.s7_prereq),'b-warn');
+      msg(cyc('s7p',NUDGE.s7_prereq),'b-konsequenz');
     } else if(S.s7){
       msg('Den Rettungsdienst haben Sie bereits eingewiesen.','b-bot');
     } else {
@@ -575,7 +600,7 @@ function pickNQ(a){
       }
     },400);
   } else {
-    later(()=>msg('❌ '+a.f,'b-err'),300);
+    later(()=>msg(a.f,'b-konsequenz'),300);
   }
 }
 
