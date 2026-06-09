@@ -472,7 +472,11 @@ function process(raw){
   /* ── "Erste Hilfe" – kontextsensitiv ────────────────────────── */
   if(!hit && has(t,['erste hilfe','ersthelfer','erste-hilfe'])){
     hit=true;
-    if(!S.s3){
+    if(!S.s1){
+      msg(cyc('s1',NUDGE.s1),'b-konsequenz');
+    } else if(!S.s2){
+      msg(cyc('s2p',NUDGE.s2_prereq),'b-konsequenz');
+    } else if(!S.s3){
       msg('⚠️ Folge: Sie handeln blind – ohne Zustandsprüfung wissen Sie nicht, ob Stefan eine Wirbelsäulenverletzung hat. Das könnte jede Maßnahme gefährlich machen.','b-konsequenz');
     } else if(!S.s5){
       S.s5=1;
