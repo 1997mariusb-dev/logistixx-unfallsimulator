@@ -461,6 +461,8 @@ function process(raw){
     hit=true;
     if(!S.s3){
       msg(cyc('s5p',NUDGE.s5_prereq),'b-konsequenz');
+    } else if(!S.s4){
+      msg('⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen? Rufen Sie zuerst den Notruf!','b-konsequenz');
     } else {
       S.s5=1;
       msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
@@ -478,6 +480,8 @@ function process(raw){
       msg(cyc('s2p',NUDGE.s2_prereq),'b-konsequenz');
     } else if(!S.s3){
       msg('⚠️ Folge: Sie handeln blind – ohne Zustandsprüfung wissen Sie nicht, ob Stefan eine Wirbelsäulenverletzung hat. Das könnte jede Maßnahme gefährlich machen.','b-konsequenz');
+    } else if(!S.s4){
+      msg('⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen? Rufen Sie zuerst den Notruf!','b-konsequenz');
     } else if(!S.s5){
       S.s5=1;
       msg('<span class="slabel">✔ Schritt 5 – Stabile Seitenlage</span>'+
@@ -515,6 +519,8 @@ function process(raw){
     hit=true;
     if(!S.s4){
       msg(cyc('s7p',NUDGE.s7_prereq),'b-konsequenz');
+    } else if(!S.s6){
+      msg('⚠️ Folge: Ihr Kollege eilt zum Eingang – Stefan liegt jedoch noch ohne Betreuung auf dem Boden. Kümmern Sie sich zuerst um Stefan, bevor Sie jemanden nach draußen schicken.','b-konsequenz');
     } else if(S.s7){
       msg('Den Rettungsdienst haben Sie bereits eingewiesen.','b-bot');
     } else {
@@ -530,6 +536,12 @@ function process(raw){
     hit=true;
     if(S.s8){
       msg('Herr Fischer ist bereits informiert.','b-bot');
+    } else if(!S.s5){
+      msg('⚠️ Folge: Herr Fischer wird informiert – aber Stefan liegt noch ohne Erste Hilfe auf dem Boden. Die Versorgung des Verletzten hat absoluten Vorrang!','b-konsequenz');
+    } else if(!S.s6){
+      msg('⚠️ Folge: Herr Fischer ist unterwegs – Stefan liegt versorgt, aber allein auf dem Boden. Wer überwacht in der Zwischenzeit seinen Zustand?','b-konsequenz');
+    } else if(!S.s7){
+      msg('⚠️ Folge: Herr Fischer koordiniert – der Rettungswagen sucht jedoch noch nach dem richtigen Eingang. Niemand weist ihn ein.','b-konsequenz');
     } else {
       S.s8=1;
       msg('<span class="slabel">✔ Schritt 8 – Vorgesetzten informieren</span>'+
