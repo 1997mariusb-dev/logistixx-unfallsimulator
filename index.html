@@ -193,31 +193,31 @@ const OTHER_KW = [...KW.s2,...KW.s3,...KW.s4,...KW.s5,
    SCENARIO NUDGES  (nur bei Prerequisite-Fehler, NICHT als Fallback)
 ═══════════════════════════════════════════════════════════════ */
 const NUDGE = {
-  s1:[ // fired when OTHER_KW matched but S1 not done
-    '⚠️ Folge: Sie eilen zu Stefan – plötzlich quietschen Reifen. Ein Gabelstapler bremst zentimeter vor Ihnen. Ohne Überblick haben Sie sich selbst in Gefahr gebracht.',
-    '⚠️ Folge: Ein zweiter Stapler dreht vom Hauptgang in Ihren Gang ein – der Fahrer sieht Sie nicht. Nur ein Notbremsmanöver verhindert das Schlimmste. Eigenschutz kommt zuerst.',
+  s1:[
+    '⚠️ Folge: Sie eilen zu Stefan – plötzlich quietschen Reifen. Ein Gabelstapler bremst zentimeter vor Ihnen. Sie waren selbst in Gefahr.',
+    '⚠️ Folge: Ein zweiter Stapler dreht vom Hauptgang in Ihren Gang ein – der Fahrer sieht Sie nicht. Nur ein Notbremsmanöver verhindert das Schlimmste.',
     '⚠️ Folge: Sie stolpern über ein Ladegerät auf dem Boden, das Sie im Stress übersehen haben. Wer übernimmt jetzt die Situation?'
   ],
-  s3_for_s4:[ // tried to call 112 without checking condition
-    '⚠️ Folge: Die Leitstelle fragt sofort: „Atmet die Person?" – Sie wissen es nicht. „Ist sie bei Bewusstsein?" – Keine Antwort. Der Einsatz wird als niedrige Priorität eingestuft. Wertvolle Minuten gehen verloren.',
-    '⚠️ Folge: Der Rettungswagen trifft ohne genaue Verletzungsinfo ein. Der Notarzt bringt die falsche Ausrüstung mit – ein Schocktrauma-Team wäre nötig gewesen. Prüfen Sie zuerst Stefans Zustand.'
+  s3_for_s4:[
+    '⚠️ Folge: Die Leitstelle fragt sofort: „Atmet die Person?" – Stille. „Ist sie bei Bewusstsein?" – Keine Antwort. Der Einsatz wird als niedrige Priorität eingestuft.',
+    '⚠️ Folge: Der Rettungswagen trifft ohne genaue Verletzungsinfo ein. Das falsche Team ist vor Ort – ein Schocktrauma-Team wäre nötig gewesen.'
   ],
-  s5_prereq:[ // tried S5 without S3
-    '⚠️ Folge: Sie drehen Stefan auf die Seite – er stöhnt schmerzhaft auf. Ohne Zustandsprüfung wussten Sie nicht, dass eine Wirbelsäulenverletzung möglich ist. Prüfen Sie zuerst seinen Zustand.',
-    '⚠️ Folge: Sie greifen nach Stefans Arm um ihn zu drehen. Sein verletztes Bein verdreht sich. Ohne Zustandsprüfung riskieren Sie eine lebensbedrohliche Verschlimmerung der Verletzungen.'
+  s5_prereq:[
+    '⚠️ Folge: Sie drehen Stefan auf die Seite – er stöhnt schmerzhaft auf. Die Ursache ist unklar – möglicherweise wurde eine Verletzung verschlimmert.',
+    '⚠️ Folge: Sie greifen nach Stefans Arm. Sein verletztes Bein verdreht sich. Der Schmerz ist sichtbar – die Situation wird kritischer.'
   ],
-  s6_prereq:[ // tried S6 without S5
-    '⚠️ Folge: Sie setzen sich neben Stefan und warten. Er liegt auf dem Rücken, Kopf leicht nach hinten gekippt. Plötzlich beginnt er zu würgen – ohne Seitenlage besteht Erstickungsgefahr durch Erbrochenes.',
-    '⚠️ Folge: Stefan liegt auf dem Rücken, Mund geöffnet, Atemwege ungesichert. Ohne stabile Seitenlage können Blut oder Erbrochenes die Atemwege blockieren – lebensbedrohlich für einen Bewusstlosen.'
+  s6_prereq:[
+    '⚠️ Folge: Sie warten neben Stefan. Er liegt auf dem Rücken, Kopf leicht nach hinten. Plötzlich beginnt er zu würgen – die Atemwege sind nicht gesichert.',
+    '⚠️ Folge: Stefan liegt auf dem Rücken, Mund geöffnet. Blut und Erbrochenes drohen die Atemwege zu blockieren – eine lebensbedrohliche Situation.'
   ],
-  s7_prereq:[ // tried S7 without S4
-    '⚠️ Folge: Ihr Kollege wartet seit 10 Minuten am Eingang – niemand kommt. Der Rettungsdienst wurde nie alarmiert. Stefan liegt weiterhin ohne professionelle Hilfe auf dem Boden.',
-    '⚠️ Folge: Ein Krankenwagen fährt zufällig an der Halle vorbei und biegt weiter ab. Ohne Notruf kommt keine Hilfe – alarmieren Sie zuerst den Rettungsdienst.'
+  s7_prereq:[
+    '⚠️ Folge: Ihr Kollege wartet seit 10 Minuten am Eingang – niemand kommt. Stefan liegt weiterhin ohne professionelle Hilfe auf dem Boden.',
+    '⚠️ Folge: Ein Krankenwagen fährt zufällig an der Halle vorbei und biegt weiter ab. Die Minuten vergehen.'
   ],
-  s2_prereq:[ // tried S3–S7 without S2 done
-    '⚠️ Folge: Während Sie sich zu Stefan bücken, fährt ein Elektrokarren ahnungslos in den Gang. Stefan wird ein zweites Mal gefährdet. Der Bereich muss zuerst gesichert werden.',
-    '⚠️ Folge: Ein Kollege läuft mit gesenktem Blick auf sein Handy in den Unfallbereich und stolpert fast über Stefan. Der Bereich war nicht gesichert – sichern Sie ihn jetzt ab.',
-    '⚠️ Folge: Der Staplerfahrer ist verwirrt und fährt langsam vorwärts statt rückwärts. Der Bereich ist noch aktiv – sichern Sie ihn sofort ab, bevor Sie sich um Stefan kümmern.'
+  s2_prereq:[
+    '⚠️ Folge: Während Sie sich zu Stefan bücken, fährt ein Elektrokarren ahnungslos in den Gang. Stefan wird ein zweites Mal gefährdet.',
+    '⚠️ Folge: Ein Kollege läuft mit gesenktem Blick auf sein Handy in den Unfallbereich und stolpert fast über Stefan.',
+    '⚠️ Folge: Der Staplerfahrer ist verwirrt und fährt langsam vorwärts. Der Bereich ist noch aktiv.'
   ]
 };
 
@@ -416,12 +416,12 @@ function process(raw){
 function skipMsg(missing){
   if(missing==='s1') return cyc('s1',NUDGE.s1);
   if(missing==='s2') return cyc('s2p',NUDGE.s2_prereq);
-  if(missing==='s3') return cyc('s5p',NUDGE.s5_prereq);
-  if(missing==='s4') return '⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen? Rufen Sie zuerst den Notruf!';
+  if(missing==='s3') return cyc('s3f',NUDGE.s3_for_s4);
+  if(missing==='s4') return '⚠️ Folge: Stefan liegt auf dem Boden – kein Rettungsdienst ist alarmiert. Wer soll die professionelle Behandlung übernehmen?';
   if(missing==='s5') return cyc('s6p',NUDGE.s6_prereq);
-  if(missing==='s6') return '⚠️ Folge: Ihr Kollege wartet am Eingang – Stefan liegt noch ohne Betreuung auf dem Boden. Betreuen Sie Stefan zuerst.';
-  if(missing==='s7') return '⚠️ Folge: Herr Fischer koordiniert – aber der Rettungswagen findet den Eingang nicht. Niemand weist ihn ein.';
-  if(missing==='s8') return '⚠️ Folge: Die Unfallanzeige – aber Stefan braucht noch Ihre volle Aufmerksamkeit.';
+  if(missing==='s6') return '⚠️ Folge: Ihr Kollege wartet am Eingang – Stefan liegt allein auf dem Boden. Niemand beobachtet seinen Zustand.';
+  if(missing==='s7') return '⚠️ Folge: Herr Fischer koordiniert – aber der Rettungswagen findet den Eingang nicht. Wertvolle Minuten gehen verloren.';
+  if(missing==='s8') return '⚠️ Folge: Die Dokumentation wartet – Stefan liegt noch immer in der Halle.';
   return 'Überlegen Sie nochmal, was jetzt die richtige Maßnahme ist.';
 }
 
