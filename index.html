@@ -80,7 +80,7 @@ body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;b
    STATE
 ═══════════════════════════════════════════════════════════════ */
 const S = {s1:0,s2:0,s3:0,s4:0,s5:0,s6:0,s7:0,s8:0,s9:0,
-           notruf:false,nStep:0,done:false,fallback:0};
+           notruf:false,nStep:0,done:false,fallback:0,help4:0,help7:0};
 
 /* ═══════════════════════════════════════════════════════════════
    KEYWORDS  (stems → declinierte Formen werden erkannt)
@@ -104,7 +104,10 @@ const KW = {
       'guck um','schau um',
       'ausschau','halte ausschau','halte ich ausschau',
       'beobachte die situation','beobachte die lage',
-      'schaue mich in','schau mich in','ich schaue mich'],
+      'schaue mich in','schau mich in','ich schaue mich',
+      'eigene sicherheit','meine sicherheit','sicherheit geht vor','sorge für meine','sorge fuer meine',
+      'lage sicher','ist die lage','alles sicher','erfasse die lage','lage erfass',
+      'mir ein bild','bild der lage','schätze die lage','schätze die situation','lage abschätz'],
 
   // S2 – Bereich absichern
   s2:['absperr','sperr','gang sperr','bereich sperr','blockier','schild',
@@ -121,7 +124,10 @@ const KW = {
       'niemand darf','andere fernhalten','fernhalten',
       'mache aufmerksam','aufmerksam machen','auf mich aufmerksam',
       'stelle mich','ich stelle mich','kollegen herbeirufen','herbeirufen',
-      'sichere mich','herbei','kollegen ruf'],
+      'sichere mich','herbei','kollegen ruf',
+      'sichere die','sichere die stelle','unfallstelle','gefahrenstelle','markier','riegel',
+      'sorge für sicherheit','sorge dass keiner','sorge dass niemand','keiner darf','keiner kommt',
+      'keiner durch','andere fern','leute fern','fern halt','wegbleiben','weg bleiben','abstand halt'],
 
   // S3 – Zustand prüfen
   s3:['ansprech','spreche an','sprech an','spreche ihn','spreche stefan','sprech stefan',
@@ -146,7 +152,8 @@ const KW = {
       'was ist mit stefan','was mit stefan',
       'kontrollier','kontrolliere stefan','kontrolliere seinen',
       'wie geht es stefan','was ist los mit stefan',
-      'schaue ihn an','schau ihn an','gucke ihn an'],
+      'schaue ihn an','schau ihn an','gucke ihn an',
+      'check seinen','check ihn','check stefan','check sein','vitalfunktion','vital'],
 
   // S4 – Notruf
   s4:['112','notruf',
@@ -156,15 +163,15 @@ const KW = {
       'rufe sanitäter','ruf sanitäter',
       'rufe den notarzt','ruf den notarzt','rufe notarzt',
       'rufe die feuerwehr','ruf die feuerwehr',
-      'rufe hilfe','ruf hilfe','rufe um hilfe','ruf um hilfe',
       'rufe einen krankenwagen','ruf einen krankenwagen','krankenwagen',
       'rufe einen rettungswagen','ruf einen rettungswagen','rettungswagen rufen',
       'rettungsdienst alarmier','rettungsdienst ruf','rettungsdienst alarm',
       'wähle die 112','wähle 112','notruf wählen','notruf rufen',
       'ruf die 112','ruf an die 112','notruf absetzen','alarm schlagen',
-      'notarzt','ambulanz','feuerwehr','hilfe hol','hilfe ruf',
-      'sanitäter ruf','alarmier','verständig',
-      'hol hilfe','hilfe holen','rettungswagen'],
+      'notarzt','ambulanz','feuerwehr',
+      'sanitäter ruf','alarmier','verständig','rettungswagen',
+      'leitstelle','professionelle hilfe','rufe professionelle',
+      '112 anrufen','notruf 112','setze einen notruf','setze den notruf','setze notruf'],
 
   // S5 – Stabile Seitenlage
   s5:['seitenlage','stabile lage','auf die seite','auf seite',
@@ -179,7 +186,8 @@ const KW = {
       'atemwege frei','atemwege freihalten','atemweg sicher','atemwege',
       'bringe ihn in','bring ihn in','bringe stefan in',
       'lege ihn sicher','lege ihn hin','lege ihn um',
-      'leg ihn hin','leg ihn um','sichere seine atemwege'],
+      'leg ihn hin','leg ihn um','sichere seine atemwege',
+      'positionier','lagere ihn','lagere stefan','lagere','stabil hin'],
 
   // S6 – Betreuen / Beobachten
   s6:['betreu','bleibe bei','bleib bei','bei ihm','bei stefan','beruhig',
@@ -195,7 +203,9 @@ const KW = {
       'spreche mit stefan','spreche mit ihm',
       'begleite stefan','begleite ihn',
       'wach','bei bewusstsein','wach halte','halte ihn wach','halte stefan wach',
-      'warte bei','warte neben'],
+      'warte bei','warte neben',
+      'tröst','warm','zudeck','decke ihn zu','überwach','beobachte weiter','weiter beobacht',
+      'warte mit','kontrolliere weiter','im auge behalt','behalte ihn'],
 
   // S7 – Rettungsdienst einweisen
   s7:['einweis','einzuweisen','weise ein','weise den rettungsdienst',
@@ -218,7 +228,9 @@ const KW = {
       'stelle jemanden an den eingang','stell jemanden an den eingang',
       'stelle einen kollegen','stell einen kollegen',
       'empfange den rettungsdienst','empfange die sanitäter',
-      'schicke kollegen raus','schick kollegen raus'],
+      'schicke kollegen raus','schick kollegen raus',
+      'hole den rettung','hole die sanitäter','hole die rettung','hole sie ab','holt den rettung',
+      'am tor','zum tor','am eingang','am haupteingang','einfahrt','wartet am','geh zum eingang','gehe zum eingang'],
 
   // S8 – Vorgesetzten informieren
   s8:['vorgesetzt','schichtleiter','fischer','informier','benachrichtig',
@@ -241,7 +253,9 @@ const KW = {
       'erstelle einen bericht','erstelle einen unfallbericht',
       'meldung machen','erstatte meldung','meldung erstatt',
       'unfall festhalten','vorfall festhalten','alles aufschreiben',
-      'schreibe alles','schreib alles','schreibe es auf','schreib es auf']
+      'schreibe alles','schreib alles','schreibe es auf','schreib es auf',
+      'melde den unfall','unfall melden','melde den vorfall','vorfall melden','halte den unfall',
+      'schriftlich fest','schriftlich festhalten']
 };
 
 // Alle Nicht-S1-Keywords für S1-Sperre
@@ -284,16 +298,35 @@ const NUDGE = {
 /* ═══════════════════════════════════════════════════════════════
    TIPPS  (für 💡-Button – konkrete Beispiele je erwartetem Schritt)
 ═══════════════════════════════════════════════════════════════ */
+// Pro Schritt 3 Stufen: 1. Klick = Leitfrage, 2. Klick = konkreter, 3.+ = nahezu Lösung
 const TIPP = {
-  s1:'In einer aktiven Lagerhalle lauern viele Gefahren. Haben Sie alle Risiken für sich selbst erkannt?',
-  s2:'Stellen Sie sich vor, ein Kollege biegt gerade ahnungslos um die Ecke. Was sollten Sie sicherstellen?',
-  s3:'Sie wollen helfen – aber was wissen Sie gerade über Stefans Zustand?',
-  s4:'Was können Sie alleine nicht leisten – und wer kann die professionelle Hilfe übernehmen?',
-  s5:'Stefan liegt bewusstlos auf dem Rücken. Diese Position kann gefährlich werden – was fällt Ihnen auf?',
-  s6:'Bis der Rettungsdienst eintrifft, vergehen noch einige Minuten. Was ist Ihre Aufgabe in dieser Zeit?',
-  s7:'Der Rettungswagen nähert sich der Halle – aber die Lagerhalle ist groß. Was müssen Sie sicherstellen?',
-  s8:'Ein Arbeitsunfall hat Konsequenzen für den gesamten Betrieb. Wer im Unternehmen muss zwingend informiert werden?',
-  s9:'Die unmittelbare Gefahr ist gebannt. Was gehört zu einer vollständigen Unfallbearbeitung noch dazu?'
+  s1:['In einer aktiven Lagerhalle lauern viele Gefahren. Haben Sie alle Risiken für sich selbst erkannt?',
+      'Bevor Sie zu Stefan eilen: Was müssen Sie über Ihre eigene Lage wissen? Denken Sie an andere Stapler, Hindernisse, den Gesamtüberblick.',
+      'Verschaffen Sie sich zuerst einen Überblick über die Lage und achten Sie auf Ihren Eigenschutz, bevor Sie handeln.'],
+  s2:['Stellen Sie sich vor, ein Kollege biegt gerade ahnungslos um die Ecke. Was sollten Sie sicherstellen?',
+      'Damit niemand sonst zu Schaden kommt: Wie verhindern Sie, dass weitere Personen oder Fahrzeuge in den Bereich gelangen?',
+      'Sichern Sie den Unfallbereich ab – sperren Sie den Gang und warnen Sie Ihre Kollegen.'],
+  s3:['Sie wollen helfen – aber was wissen Sie gerade über Stefans Zustand?',
+      'Bevor Sie Hilfe rufen: Welche Informationen über Stefan brauchen Sie? Denken Sie an Reaktion und Atmung.',
+      'Prüfen Sie Stefans Zustand: Sprechen Sie ihn an und kontrollieren Sie Bewusstsein und Atmung.'],
+  s4:['Was können Sie alleine nicht leisten – und wer kann die professionelle Hilfe übernehmen?',
+      'Stefan braucht ärztliche Versorgung, die Sie nicht leisten können. Wie erreichen Sie professionelle Hilfe?',
+      'Setzen Sie den Notruf ab – wählen Sie die 112 und melden Sie den Unfall.'],
+  s5:['Stefan liegt bewusstlos auf dem Rücken. Diese Position kann gefährlich werden – was fällt Ihnen auf?',
+      'Ein Bewusstloser auf dem Rücken kann ersticken. In welche Position bringen Sie ihn, damit die Atemwege frei bleiben?',
+      'Bringen Sie Stefan in die stabile Seitenlage, damit seine Atemwege frei bleiben.'],
+  s6:['Bis der Rettungsdienst eintrifft, vergehen noch einige Minuten. Was ist Ihre Aufgabe in dieser Zeit?',
+      'Stefan darf jetzt nicht allein bleiben. Worauf achten Sie, während Sie auf den Rettungsdienst warten?',
+      'Bleiben Sie bei Stefan, beobachten Sie seine Atmung und sprechen Sie beruhigend mit ihm.'],
+  s7:['Der Rettungswagen nähert sich der Halle – aber die Lagerhalle ist groß. Was müssen Sie sicherstellen?',
+      'Der Rettungsdienst darf keine Zeit verlieren, um Stefan zu finden. Wie sorgen Sie dafür?',
+      'Schicken Sie jemanden zum Eingang, der den Rettungsdienst einweist und zum Unfallort lotst.'],
+  s8:['Ein Arbeitsunfall hat Konsequenzen für den gesamten Betrieb. Wer im Unternehmen muss zwingend informiert werden?',
+      'Es gibt eine verantwortliche Person im Betrieb, die jetzt Bescheid wissen muss. Wer ist das?',
+      'Informieren Sie Ihren Schichtleiter, Herrn Fischer, über den Unfall.'],
+  s9:['Die unmittelbare Gefahr ist gebannt. Was gehört zu einer vollständigen Unfallbearbeitung noch dazu?',
+      'Jeder Arbeitsunfall muss aus rechtlichen Gründen erfasst werden. Womit halten Sie den Vorfall fest?',
+      'Dokumentieren Sie den Unfall: Füllen Sie die Unfallanzeige aus und tragen Sie ihn ins Verbandbuch ein.']
 };
 
 /* ═══════════════════════════════════════════════════════════════
@@ -379,9 +412,14 @@ function expected(){
   return null;
 }
 
+// Tipp-Klick-Zähler pro Schritt (gestufte Tipps)
+const TC={};
 function showTipp(){
   const st=expected(); if(!st)return;
-  const t=TIPP[st]; if(t) msg('💡 '+t,'b-bot');
+  const lvls=TIPP[st]; if(!lvls)return;
+  const i=Math.min(TC[st]||0, lvls.length-1);
+  msg('💡 '+lvls[i],'b-bot');
+  TC[st]=(TC[st]||0)+1;
 }
 
 /* ═══════════════════════════════════════════════════════════════
@@ -429,6 +467,13 @@ const WRONG_ACTIONS = [
     msg:'⚠️ Folge: Den Helm eines Bewusstlosen zu entfernen kann eine Halswirbelverletzung massiv verschlimmern. Das ist ausschließlich Aufgabe des Rettungsdienstes.' }
 ];
 
+/* Optionaler Schritt „Um Hilfe bitten" – Helfer herbeirufen (nicht der Notruf) */
+const HELP_KW=['um hilfe','hilfe rufen','rufe hilfe','ruf hilfe','rufe um hilfe','ruf um hilfe',
+  'laut rufen','rufe laut','ruf laut','laut um hilfe','schreie um hilfe','um hilfe schrei',
+  'hilfe holen','hole hilfe','hol hilfe','holt hilfe','helfer holen','weitere helfer','mehr helfer',
+  'kollegen zu hilfe','jemanden zu hilfe','jemand zu hilfe','jemanden um hilfe',
+  'um unterstützung','unterstützung holen','hilfe besorgen'];
+
 function process(raw){
   const t=raw;
 
@@ -451,6 +496,28 @@ function process(raw){
   };
   const ORD=['s1','s2','s3','s4','s5','s6','s7','s8','s9'];
   const ei=ORD.indexOf(exp);
+
+  /* ── Optionaler Schritt „Um Hilfe bitten" (zwischen S3→S4 und S6→S7) ── */
+  if((exp==='s4'||exp==='s7') && !has(t,KM[exp]) && has(t,HELP_KW)){
+    if(exp==='s4'){
+      if(!S.help4){ S.help4=1;
+        msg('<span class="slabel">👍 Optionaler Schritt – Hilfe herbeirufen</span>'+
+            'Gut mitgedacht: Sie rufen weitere Personen herbei. Ein Kollege kommt und kann Sie bei der '+
+            'Erstversorgung unterstützen. <em>(Sinnvoll, aber noch nicht das Wichtigste.)</em>','b-ok');
+        later(()=>msg('Was ist jetzt am dringendsten für Stefan zu tun?','b-bot'),900);
+      } else
+        msg('Hilfe ist bereits unterwegs. Was muss jetzt unbedingt passieren, damit Stefan professionell versorgt wird?','b-bot');
+    } else {
+      if(!S.help7){ S.help7=1;
+        msg('<span class="slabel">👍 Optionaler Schritt – Hilfe herbeirufen</span>'+
+            'Gut: Ein herbeigerufener Kollege kann Ihnen jetzt eine wichtige Aufgabe abnehmen. '+
+            '<em>(Optionaler, sinnvoller Schritt.)</em>','b-ok');
+        later(()=>msg('Wofür könnten Sie diesen Kollegen jetzt am besten einsetzen?','b-bot'),900);
+      } else
+        msg('Ein Kollege steht bereit. Wie sorgen Sie dafür, dass der Rettungswagen schnell zu Stefan findet?','b-bot');
+    }
+    return;
+  }
 
   /* ── Eingabe trifft genau den erwarteten Schritt → ausführen ─ */
   if(has(t,KM[exp])){ doStep(exp); return; }
@@ -631,8 +698,9 @@ function checkDone(){
 ═══════════════════════════════════════════════════════════════ */
 function restart(){
   Object.assign(S,{s1:0,s2:0,s3:0,s4:0,s5:0,s6:0,s7:0,s8:0,s9:0,
-                   notruf:false,nStep:0,done:false,fallback:0});
+                   notruf:false,nStep:0,done:false,fallback:0,help4:0,help7:0});
   Object.keys(NC).forEach(k=>NC[k]=0);
+  Object.keys(TC).forEach(k=>delete TC[k]);
   document.getElementById('notruf-banner').style.display='none';
   document.getElementById('notruf-panel').style.display='none';
   lock(false);
